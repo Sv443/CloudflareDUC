@@ -1,0 +1,28 @@
+
+GET https://api.cloudflare.com/client/v4/zones/
+    get ID: response<JSON>.result<Array>[0].id<String>
+    test for success: response<JSON>.success<Boolean>
+
+      |
+      v
+
+GET https://api.cloudflare.com/client/v4/zones/ {ID FROM FIRST GET} /dns_records/
+    get dns ID array: response<JSON>.result<Array>[iterate]<JSON>.id<String>
+    get type array: response<JSON>.result<Array>[iterate]<JSON>.type<String>
+    get name array: response<JSON>.result<Array>[iterate]<JSON>.name<String>
+    get proxied array: response<JSON>.result<Array>[iterate]<JSON>.proxied<Boolean>
+    test for success: response<JSON>.success<Boolean>
+
+      |
+      V
+
+PUT https://api.cloudflare.com/client/v4/zones/ {ID FROM FIRST GET} /dns_records/ {ID FROM SECOND (DNS) GET}
+    content: application/json:
+    {
+        "type": { TYPE FROM SECOND GET },
+        "name": { NAME FROM SECOND GET },
+        "content": { IP ADDRESS },
+        "proxied": { PROXIED FROM SECOND GET },
+        "ttl": 1
+    }
+    test for success: response<JSON>.success<Boolean>
