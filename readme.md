@@ -5,7 +5,7 @@
 <br><br>
 
 ---
-[![](icons/download_button.png)](https://github.com/Sv443/CloudflareDUC/raw/master/compiled/CloudflareDUC%20(v0.1_alpha)%20by%20Sv443.zip) [![](icons/installation_button.png)](#installation) [How it works](#how-it-works) - [Issues](https://github.com/Sv443/CloudflareDUC/issues) - [Info for Devs](https://github.com/Sv443/CloudflareDUC/src/info-for-devs.md)
+[![](icons/download_button.png)](https://github.com/Sv443/CloudflareDUC/raw/master/compiled/CloudflareDUC%20(v0.1_alpha)%20by%20Sv443.zip) [![](icons/installation_button.png)](#installation) [How it works](#how-it-works) - [Issues](https://github.com/Sv443/CloudflareDUC/issues) - [Info for Devs](https://github.com/Sv443/CloudflareDUC/blob/master/src/info-for-devs.md)
 
 ---
 
