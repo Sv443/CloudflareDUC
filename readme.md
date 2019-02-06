@@ -4,8 +4,14 @@
 
 <br><br>
 
----
-[![](icons/download_button.png)](https://github.com/Sv443/CloudflareDUC/raw/master/compiled/CloudflareDUC%20(v0.1_alpha)%20by%20Sv443.zip) [![](icons/installation_button.png)](#installation) [How it works](#how-it-works) - [Issues](https://github.com/Sv443/CloudflareDUC/issues) - [Info for Devs](https://github.com/Sv443/CloudflareDUC/blob/master/src/info-for-devs.md)
+# [Download EXE](https://github.com/Sv443/CloudflareDUC/raw/master/compiled/CloudflareDUC%20(v0.1_alpha)%20by%20Sv443.zip)
+(Note: Windows Defender will probably warn you because I can't get a license for the exe. Please ignore this warning or clone the repository and run it with Node instead)
+<br><br><br><br>
+
+
+# Menu:
+
+## [Installation](#installation) - [How it works](#how-it-works) - [Issues](https://github.com/Sv443/CloudflareDUC/issues) - [Technical Information](https://github.com/Sv443/CloudflareDUC/blob/master/src/technical-information.md)
 
 ---
 
@@ -13,7 +19,11 @@
 
 # Installation
 
-1. [Download](#) the ZIP file which contains the .exe, .env and .cfg files
+## Before you start:
+- This is **not** a stable build! I haven't added much error catching and I can't guarantee that it works for you yet
+- I haven't done much quality assurance yet - that will be done once I make a stable release
+
+1. [Download](#download-exe) the ZIP file which contains the .exe, .env and .cfg files
 2. Extract the three files inside the ZIP to a folder of your liking
 3. Open the .env file with any text editor
 4. Go to your Cloudflare account page and click the two view buttons under the section "API Keys"
@@ -28,7 +38,7 @@
 13. Save the file and close it  
 
 ... and you are done! Now just start the .exe file and give it a little time to start up (shouldn't take longer than a minute) and let it keep running to have it automatically update the DNS records.  
-To shut it down either press `CTRL+C` to have a prompted exit or just close the window to instantly shut it down.  
+To shut it down either press <kbd>^C</kbd> to have a prompted exit or just close the window to instantly shut it down.  
 If you change anything in the .cfg or .env file, make sure to restart the application.  
 <br>
 ## If you encounter any bugs or want me to add more features, please visit [this link](https://github.com/Sv443/CloudflareDUC/issues) and open a new issue and I will fix/add it as soon as possible. Thanks :)
