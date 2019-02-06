@@ -1,2 +1,8 @@
 [Mon Dec 10 2018 20:17:41 GMT+0100 (GMT+01:00)]  error 158: I am an example error that gets logged to the error.log file!
 [Mon Dec 10 2018 20:17:41 GMT+0100 (GMT+01:00)]  Error: xy
+[Tue Dec 11 2018 09:27:43 GMT+0100 (Mitteleuropäische Zeit)]  error 158: I am an example error that gets logged to the error.log file!
+[Tue Dec 11 2018 09:27:43 GMT+0100 (Mitteleuropäische Zeit)]  Error: xy
+[Tue Dec 11 2018 09:42:50 GMT+0100 (Mitteleuropäische Zeit)]  error 158: I am an example error that gets logged to the error.log file!
+[Tue Dec 11 2018 09:42:50 GMT+0100 (Mitteleuropäische Zeit)]  Error: xy
+[Tue Dec 11 2018 15:44:51 GMT+0100 (Mitteleuropäische Zeit)]  error 158: I am an example error that gets logged to the error.log file!
+[Tue Dec 11 2018 15:44:51 GMT+0100 (Mitteleuropäische Zeit)]  Error: xy

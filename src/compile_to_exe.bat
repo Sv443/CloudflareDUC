@@ -1,4 +1,4 @@
 @echo off
-pkg index.js -o CF-DUC_Sv443
+pkg wrapper.js -o CF-DUC
 @echo on
 PAUSE
