@@ -1,11 +1,11 @@
 require('dotenv').config();
 const https = require("https");
 const http = require("http");
-const getMyIP = require('get-my-ip');
+const extIP = require("externalip");
 const jsl = require("svjsl");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-const developerMode = true;
+const developerMode = false;
 const version = "v0.2 (alpha)";
 
 const errorHandler = require("./errorHandler.js");
@@ -51,17 +51,14 @@ if(!developerMode) {
 }
 else {
     console.log("\x1b[33m\x1b[1m[!] \x1b[0mDeveloper Mode is enabled! \x1b[33m\x1b[1m[!]\x1b[0m\n\n");
-    currentIP = "2.205.169.80";
+    currentIP = "1.111.111.11";
 }
 
 function getOwnIP() {
-    if(!shuttingdown) {
-        currentIP = getMyIP();
-        if(jsl.isEmpty(currentIP)) {
-            shuttingdown=true;
-            errorHandler(100, true, "received IP " + currentIP + " /typeof " + typeof currentIP);
-        }
-    }
+    extIP((err, ip) => {
+        if(!err) currentIP = ip;
+        else errorHandler(100, true, "received IP " + ip + " /typeof " + typeof currentIP + " /err " + err);
+    });
 }
 
 function initializeAll() {
@@ -121,7 +118,7 @@ function updateRecord() {
                 if(xhr.responseText == "null" || jsl.isEmpty(xhr.responseText)) console.log("\x1b[1m\x1b[33m[UPDATE]\x1b[0m        Error: " + xhr.statusText + " -- " + xhr.responseText);
             }
             else if(xhr.status == 400) {
-                errorHandler(202, true, "Status: " + xhr.status + " - Error: " + JSON.stringify(JSON.parse(xhr.responseText).errors, null, 4))
+                errorHandler(202, false, "Status: " + xhr.status + " - Error: " + JSON.stringify(JSON.parse(xhr.responseText).errors, null, 4))
             }
             else {
                 if(developerMode) console.log(i + " /RS; " + xhr.readyState + " - " + xhr.status + " - " + xhr.responseText);

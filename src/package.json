@@ -27,7 +27,7 @@
   "homepage": "https://github.com/Sv443/CloudflareDUC#readme",
   "dependencies": {
     "dotenv": "^6.2.0",
-    "get-my-ip": "^0.0.1",
+    "externalip": "^1.0.2",
     "http": "0.0.0",
     "https": "^1.0.0",
     "node-wrap": "^0.2.0",
