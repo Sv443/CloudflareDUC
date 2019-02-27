@@ -20,16 +20,17 @@
 # Installation
 
 ## Before you start:
-- This is **not** a stable build! I haven't added much error catching and I can't guarantee that it works for you yet
-- I haven't done much quality assurance yet - that will be done once I make a stable release
+- This is a **relatively** stable build but still pretty unstable. I can't guarantee that it works for you yet. It can't possibly do any damage but it might just not work.
+- I haven't done much quality assurance yet - that will be done once I make a very stable full release.
 
-1. [Download](#download-exe) the ZIP file which contains the `.bat` to run it and both a `.env` and a `.cfg` file in the `src` folder
+1. [Download](#download-the-latest-stable-build-here) the ZIP file which contains the `.bat` to run it and both a `.env` and a `settings.cfg` file in the `src` folder
 2. Extract all files inside the ZIP to a folder of your liking
 3. Open the `.env` file in the `src` folder with any text editor
-4. Go to your Cloudflare account page and click the two view buttons under the section "API Keys"
+4. Go to your Cloudflare account page and click the two view buttons under the section "API Keys" which looks like this:  
+![](https://sv443.net/cdn/cfduc/apikeys.png)
 5. Copy the keys to the respective column in the `.env` file (Global API key to column 1 and Origin CA key to column 2)
 6. Enter your account's E-Mail in the third column
-7. IMPORTANT! Make sure NOBODY has access to the .env file and make sure to protect its contents like a password! For example, add a .gitignore like I did to be 100% sure it won't land on any GitHub repo.
+7. IMPORTANT! Make sure NOBODY has access to the .env file and make sure to protect its contents like a password! If you accidentally published it somewhere, go to your account's dashboard and click the "change" buttons to regenerate the tokens.
 8. Save the `.env` file and close it
 9. Open the `settings.cfg` file and change the first attribute (hosturl) to your full domain (example: `https://www.google.com/`)
 10. (Optional) adjust the interval (higher = lower bandwidth usage but also higher downtime - lower = higher bandwidth usage but also lower downtime) - recommended is 300 (every 5 minutes)
@@ -39,7 +40,7 @@
 
 ... and you are done! Now just start the `.bat` file and give it a little time to start up (shouldn't take longer than a minute) and let it keep running to have it automatically update the DNS records.  
 To shut it down either press <kbd>^C</kbd> or just close the window to instantly shut it down.  
-If you change anything in the `.cfg` or `.env` file, make sure to restart the application.  
+If you change anything in the `settings.cfg` or `.env` file, make sure to restart the application.  
 <br>
 ## If you encounter any bugs or want me to add more features, please visit [this link](https://github.com/Sv443/CloudflareDUC/issues) and open a new issue and I will fix/add it as soon as possible. Thanks :)
 
