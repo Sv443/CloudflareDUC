@@ -4,8 +4,8 @@
 
 <br><br>
 
-# [Download](https://github.com/Sv443/CloudflareDUC/raw/master/compiled/CloudflareDUC%20(v0.2_alpha)%20by%20Sv443.zip)
-(Note: Windows Defender will probably warn you because I can't get a license for the exe. Please ignore this warning or clone the repository and run it with Node instead)
+# [Download the latest stable build here](https://github.com/Sv443/CloudflareDUC/blob/master/stable/CloudflareDUC%20(v0.2_alpha).zip?raw=true)
+(Note: Windows Defender could warn you because I can't get a license for the application. Please ignore this warning or clone the repository and run it with Node instead)
 <br><br><br><br>
 
 
