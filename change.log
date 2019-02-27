@@ -2,7 +2,7 @@
 
 [alpha-0.2] - Full error handler, better sorted source code, a bit of quality assurance
     - removed yesno library and added selfmade shutdown prompt
-    - replaced public-ip library with get-my-ip to save on some dependencies
+    - replaced public-ip library with get-my-ip and then to externalip
     - added error handler with full descriptions
     - updated dependencies
     - added package "node-wrap" to wrap the DUC and restart it if it crashes
