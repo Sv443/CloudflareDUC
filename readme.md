@@ -1,3 +1,7 @@
+# IMPORTANT
+### This is an old version of CloudflareDUC. The new versions have been included in my Patreon-Supporter Closed Beta program and are only available to Generous Supporters (15$). Once the first full release is done, CloudflareDUC will be free to download.
+### Thank you for understanding!
+
 
 # [![](icons/icon_100x100.png)](https://github.com/Sv443/CloudflareDUC/) CloudflareDUC (v0.2_alpha) by [Sv443](https://sv443.net/)<br>[![](https://img.shields.io/github/license/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/blob/master/LICENSE) ![](https://img.shields.io/badge/documentation-full-green.svg?style=flat-square) [![](https://img.shields.io/github/issues/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/issues) [![](https://img.shields.io/github/stars/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/)
 ### An easy to use Dynamic Update Client for Cloudflare that only needs minimal configuration
