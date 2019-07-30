@@ -1,5 +1,5 @@
 # IMPORTANT
-### This is an old version of CloudflareDUC. The new versions have been included in my Patreon-Supporter Closed Beta program and are only available to Generous Supporters (15$). Once the first full release is done, CloudflareDUC will be free to download.
+### This is an old version of CloudflareDUC. The new versions have been included in my Patreon-Supporter Closed Beta program and are only available to the Generous Supporter rank (15$). Once the first full release is done, CloudflareDUC will be free to download.
 ### Thank you for understanding!
 
 <br><br><br><br>
