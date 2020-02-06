@@ -32,6 +32,7 @@ var initPB;
 if(debuggerActive !== true) initPB = new jsl.ProgressBar(6, "Verifying config files...");
 
 
+//#MARKER Init
 /**
  * Initialize everything
  */
@@ -50,7 +51,7 @@ const initAll = () => {
                         // got error response from CF API
 
                         console.log(`\n\n\x1b[33m\x1b[1m${err}\n\nPlease check whether your login information in the ".env" file is correct if you keep getting this error.\nThis window will automatically close after 20 seconds.\n\n\x1b[0m`);
-                        setTimeout(()=>process.exit(0), 20000);
+                        process.exit(1);
                         return;
                     }
                     else if(err == null) {
@@ -123,6 +124,7 @@ const getIpError = err => {
     if(typeof err != "string") console.log(`GetIP - Error: ${err}`);
 }
 
+//#MARKER Get IP
 /**
  * Updates the own device's public IP address on a set interval
  */
@@ -155,11 +157,11 @@ const getIPloop = () => {
                 }
             };
 
-            backupxhr.ontimeout = e => getIpError(e);
+            backupxhr.ontimeout = e => getIpError(`XHR ETIMEDOUT: ${e}`);
         
-            backupxhr.onerror = e => getIpError(e);
+            backupxhr.onerror = e => getIpError(`XHR general error: ${e}`);
 
-            backupxhr.send(null);
+            backupxhr.send();
         };
 
         let gip = () => {
@@ -208,11 +210,11 @@ const getIPloop = () => {
                     }
                 };
                 
-                xhr.ontimeout = e => getIpError(e);
+                xhr.ontimeout = e => getIpError(`XHR ETIMEDOUT: ${e}`);
             
-                xhr.onerror = e => getIpError(e);
+                xhr.onerror = e => getIpError(`XHR general error: ${e}`);
 
-                xhr.send(null);
+                xhr.send();
             }
             catch(err) {
                 if(settings.verboseLogging) console.log(`\n\n\x1b[31m\x1b[1m[IPloop]\x1b[0m Error: ${err}`);
@@ -230,6 +232,7 @@ const getIPloop = () => {
     }
 }
 
+//#MARKER CheckLoop
 /**
  * Starts the check loop which checks the DNS record(s) on interval and causes the actual DNS update
  */
@@ -292,6 +295,7 @@ const startCheckLoop = () => {
     }
 }
 
+//#MARKER Update Record
 const updateRecord = record => {
     // PUT https://api.cloudflare.com/client/v4/zones/[ZONE_ID]/dns_records/[DNS_ID]
 

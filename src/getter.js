@@ -17,6 +17,8 @@ const zoneIDs = callback => {
         let triggeredCB = false;
         if(!err) {
             try {
+                if(res.includes("ETIMEDOUT"))
+                    return callback(`[Get ZoneIDs] Error: The connection to the Cloudflare API timed out. Make sure your network allows this connection to be established.\nError: ${res}`);
                 let rawzones = [];
                 JSON.parse(res).result.forEach(zone => rawzones.push(zone));
                 rawzones.forEach(zone => {
@@ -32,7 +34,7 @@ const zoneIDs = callback => {
                 });
             }
             catch(err) {
-                return callback(`Error while parsing the response from the Cloudflare API: ${err}`);
+                return callback(`[Get ZoneIDs] Error while parsing the response from the Cloudflare API: ${err}`);
             }
         }
         else return callback(err);
@@ -50,6 +52,8 @@ const dnsIDs = (zoneID, callback) => {
     getReq(`https://api.cloudflare.com/client/v4/zones/${zoneID}/dns_records`, true, (err, res) => {
         if(!err) {
             try {
+                if(res.includes("ETIMEDOUT"))
+                    return callback(`[Get ZoneIDs] Error: The connection to the Cloudflare API timed out. Make sure your network allows this connection to be established.\nError: ${res}`);
                 let dnsids = [];
                 JSON.parse(res).result.forEach(dnsrecord => dnsids.push({
                     id: dnsrecord.id,
@@ -60,7 +64,7 @@ const dnsIDs = (zoneID, callback) => {
                 callback(null, dnsids);
             }
             catch(err) {
-                return callback(`Error while parsing the response from the Cloudflare API: ${err}`);
+                return callback(`[Get DnsIDs] Error while parsing the response from the Cloudflare API: ${err}`);
             }
         }
         else callback(err);
@@ -76,11 +80,13 @@ const dnsRecords = (zoneID, callback) => {
     getReq(`https://api.cloudflare.com/client/v4/zones/${zoneID}/dns_records`, true, (err, res) => {
         if(!err) {
             try {
+                if(res.includes("ETIMEDOUT"))
+                    return callback(`[Get ZoneIDs] Error: The connection to the Cloudflare API timed out. Make sure your network allows this connection to be established.\nError: ${res}`);
                 res = JSON.parse(res);
                 callback(null, res);
             }
             catch(err) {
-                return callback(`Error while parsing the response from the Cloudflare API: ${err}`);
+                return callback(`[Get DnsRecords] Error while parsing the response from the Cloudflare API: ${err}`);
             }
         }
         else callback(err);
