@@ -5,7 +5,7 @@ const logger = require("./logger");
 
 // initializes the config loader / converter
 function init() {
-    let loadCfgHR = process.hrtime(); // start measuring the time it takes to convert all .cfg files
+    // let loadCfgHR = process.hrtime(); // start measuring the time it takes to convert all .cfg files
     if(settings.verboseLogging) console.log(`\x1b[33m\x1b[1m[Config]\x1b[0m Initializing...`);
     return new Promise((resolve, reject) => {
         try {
@@ -42,7 +42,7 @@ function JSONify(cfgtext) { // Taken from my newest project, JServ
 
             // generate key/value pair:
             let key = line.split("=")[0].trim();
-            let val = line.split("=")[1].trim().replace(/\"/gm, "");
+            let val = line.split("=")[1].trim().replace(/"/gm, "");
 
             // assign key/value pair to `doneObj`
             doneObj[key] = val;
@@ -74,7 +74,7 @@ function JSONify(cfgtext) { // Taken from my newest project, JServ
 
                     // generate a key/value pair:
                     let key = line3.split("=")[0].trim();
-                    let val = line3.split("=")[1].trim().replace(/\"/gm, "");
+                    let val = line3.split("=")[1].trim().replace(/"/gm, "");
 
                     if(key.includes("$") && key.split("$")[0] == "") { // second layer of checking if the line matches the nested object key/value syntax
                         key = key.replace(/\$/gm, ""); // remove the $ prefix
