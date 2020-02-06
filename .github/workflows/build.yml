@@ -29,11 +29,6 @@ jobs:
         npm run lint
       env:
         CI: "true"
-    - name: Check if PROD mode # makes sure production mode was enabled
-      run: |
-        npm run is-prod
-      env:
-        CI: "true"
     - name: Discord success notification # sends a Discord notification
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}

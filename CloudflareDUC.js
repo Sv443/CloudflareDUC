@@ -6,7 +6,7 @@ const wHash = require("workspace-hash");
 wHash("md5", "hex", {
     excludeFiles: [],
     excludeFolders: [],
-    outputFile: "./hash.md5"
+    outputFile: "./integrity.md5"
 }).then(() => {
     init();
 }).catch(() => {
