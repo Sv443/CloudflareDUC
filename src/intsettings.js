@@ -1,7 +1,6 @@
 module.exports = {
     version: "CB_07",                                      // internal, shortened version
     versionFull: "closed beta 0.7",                        // full, human readable version
-    prodMode: true,                                        // switch between development and production mode to disable the package "node-wrap" which is incompatible with the package "pkg"
     verboseLogging: false,                                 // whether or not to log debug info to the console
     bypassIP: null,                                        // whether or not to bypass the IP address that is gotten from the IP provider(s)
     ipProvider: "https://api.ipify.org/?format=json",      // default IP provider

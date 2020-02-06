@@ -120,7 +120,7 @@ const initError = (title, desc) => {
  */
 const getIpError = err => {
     initError("fetching your public IP", `Error message: ${typeof err == "string" ? err : ""}`);
-    if(typeof err != "string") console.log(err);
+    if(typeof err != "string") console.log(`GetIP - Error: ${err}`);
 }
 
 /**
