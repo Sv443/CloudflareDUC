@@ -12,9 +12,7 @@
     "email": "sven.fehler@web.de",
     "url": "https://github.com/Sv443"
   },
-  "contributors": [
-      
-  ],
+  "contributors": [],
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -38,6 +36,7 @@
   },
   "dependencies": {
     "dotenv": "^7.0.0",
+    "internet-available": "^1.0.0",
     "node-wrap": "^0.2.0",
     "svjsl": "^1.8.3",
     "workspace-hash": "^0.1.0",

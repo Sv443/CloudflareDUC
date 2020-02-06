@@ -8,15 +8,15 @@ wHash("md5", "hex", {
     excludeFolders: [],
     outputFile: "./integrity.md5"
 }).then(() => {
-    init();
+    return init();
 }).catch(() => {
-    init();
+    return init();
 });
 
 function init()
 {
     if(debuggerActive !== true) {
-        nodeWrap("./src/main.js", {
+        return nodeWrap("./src/main.js", {
             console: true,
             logFile: "./logs/wrapper.log",
             logTimestamp: true,
@@ -26,10 +26,6 @@ function init()
         }, () => {
             // on crash
         });
-
-        return; // not in debugger so return so that the main script doesn't get run twice
     }
     else return require("./main"); // either in debugger or in prod mode, so just run the main script
 }
-
-init();

@@ -3,6 +3,7 @@ const settings = require("./intsettings"); // internal settings file that is jus
 
 const jsl = require("svjsl"); // one of my own libraries that does miscellaneous stuff
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; // implements XHR's as defined in the W3C spec
+const hasInternet = require("internet-available");
 
 const get = require("./getter"); // central module for all "get events" like getting the DNS IDs
 const cfg = require("./loadCfg"); // loads in the config file and converts it into a JSON object
@@ -29,7 +30,7 @@ var zoneID = "";
 console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
 var initPB;
-if(debuggerActive !== true) initPB = new jsl.ProgressBar(6, "Verifying config files...");
+if(debuggerActive !== true) initPB = new jsl.ProgressBar(7, "Checking internet connection...");
 
 
 //#MARKER Init
@@ -38,64 +39,69 @@ if(debuggerActive !== true) initPB = new jsl.ProgressBar(6, "Verifying config fi
  */
 const initAll = () => {
     try {
-        if(settings.verboseLogging) console.log(`\n\n\x1b[33m\x1b[1m[initAll]\x1b[0m initializing all...`);
-        if(cfg.verifyCfgFiles()) { // check if .env and settings.cfg exist and create them if not
-            if(debuggerActive !== true) initPB.next("Reading config file...");
-            cfg.init().then(()=>{ // read the settings.cfg file and create a JSON object out of it
-                if(debuggerActive !== true) initPB.next("Starting get-IP-loop...");
-                getIPloop(); // start the loop that fetches the own network's public IP
-                if(settings.verboseLogging) console.log(`\n\n\x1b[32m\x1b[1m[Config]\x1b[0m initialized`);
-                if(debuggerActive !== true) initPB.next("Getting zone IDs...");
-                get.zoneIDs((err, zidres) => { // get all DNS zone IDs from the Cloudflare API
-                    if(err != null || zidres == undefined) {
-                        // got error response from CF API
+        hasInternet().then(() => {
+            if(debuggerActive !== true) initPB.next("Verifying config files...");
+            if(settings.verboseLogging) console.log(`\n\n\x1b[33m\x1b[1m[initAll]\x1b[0m initializing all...`);
+            if(cfg.verifyCfgFiles()) { // check if .env and settings.cfg exist and create them if not
+                if(debuggerActive !== true) initPB.next("Reading config file...");
+                cfg.init().then(()=>{ // read the settings.cfg file and create a JSON object out of it
+                    if(debuggerActive !== true) initPB.next("Starting get-IP-loop...");
+                    getIPloop(); // start the loop that fetches the own network's public IP
+                    if(settings.verboseLogging) console.log(`\n\n\x1b[32m\x1b[1m[Config]\x1b[0m initialized`);
+                    if(debuggerActive !== true) initPB.next("Getting zone IDs...");
+                    get.zoneIDs((err, zidres) => { // get all DNS zone IDs from the Cloudflare API
+                        if(err != null || zidres == undefined) {
+                            // got error response from CF API
 
-                        console.log(`\n\n\x1b[33m\x1b[1m${err}\n\nPlease check whether your login information in the ".env" file is correct if you keep getting this error.\nThis window will automatically close after 20 seconds.\n\n\x1b[0m`);
-                        process.exit(1);
-                        return;
-                    }
-                    else if(err == null) {
-                        zoneID = zidres.id;
+                            console.log(`\n\n\x1b[33m\x1b[1m${err}\n\nPlease check whether your login information in the ".env" file is correct if you keep getting this error.\nThis window will automatically close after 20 seconds.\n\n\x1b[0m`);
+                            process.exit(1);
+                            return;
+                        }
+                        else if(err == null) {
+                            zoneID = zidres.id;
 
-                        if(settings.verboseLogging) console.log(`\n\n\x1b[32m\x1b[1m[Get]\x1b[0m got Zone ID`); 
-                        if(!err) {
-                            if(debuggerActive !== true) initPB.next("Getting DNS IDs...");
-                            get.dnsIDs(zoneID, (err, res) => { // get all DNS IDs from the Cloudflare API
-                                recordsToUpdate = res;
+                            if(settings.verboseLogging) console.log(`\n\n\x1b[32m\x1b[1m[Get]\x1b[0m got Zone ID`); 
+                            if(!err) {
+                                if(debuggerActive !== true) initPB.next("Getting DNS IDs...");
+                                get.dnsIDs(zoneID, (err, res) => { // get all DNS IDs from the Cloudflare API
+                                    recordsToUpdate = res;
 
-                                // 2019-07-04 | #17 | Remove all records that aren't of type A or AAAA
-                                recordsToUpdate.forEach((record, i) => {
-                                    if(record.type != "A" && record.type != "AAAA") recordsToUpdate.splice(i, 1);
+                                    // 2019-07-04 | #17 | Remove all records that aren't of type A or AAAA
+                                    recordsToUpdate.forEach((record, i) => {
+                                        if(record.type != "A" && record.type != "AAAA") recordsToUpdate.splice(i, 1);
+                                    });
+                                    
+                                    if(settings.verboseLogging) console.log(`\n\n\x1b[32m\x1b[1m[Get]\x1b[0m got DNS IDs`); 
+                                    if(!err) {
+                                        if(debuggerActive !== true) initPB.next("Starting ping loop...");
+                                        startCheckLoop(); // starting DNS check loop
+
+                                        // done
+
+                                        if(debuggerActive !== true) initPB.next(`\x1b[32m\x1b[1mDone initializing CloudflareDUC (${settings.versionFull})\x1b[0m\n\x1b[36m\x1b[1mYou can just let this process run in the background and everything will be done for you, ${zidres.user}!\x1b[0m`);
+                                        console.log(`\x1b[36m\x1b[1mCloudflareDUC will keep all DNS records for the page \x1b[33m\x1b[1m${zidres.name}\x1b[0m\x1b[36m\x1b[1m (Plan: \x1b[33m\x1b[1m${zidres.plan}\x1b[0m\x1b[36m\x1b[1m) up to date.\x1b[0m\n\n`);
+
+                                        if(settings.verboseLogging) console.log(`\n\n\x1b[32m\x1b[1m[initAll]\x1b[0m done initializing\n- zid: ${zoneID}\n- res:\n${JSON.stringify(res, null, 4)}`); 
+                                    }
+                                    else {
+                                        // err while getting DNS IDs
+                                        return initError("getting DNS IDs", err);
+                                    }
                                 });
-                                
-                                if(settings.verboseLogging) console.log(`\n\n\x1b[32m\x1b[1m[Get]\x1b[0m got DNS IDs`); 
-                                if(!err) {
-                                    if(debuggerActive !== true) initPB.next("Starting ping loop...");
-                                    startCheckLoop(); // starting DNS check loop
-
-                                    // done
-
-                                    if(debuggerActive !== true) initPB.next(`\x1b[32m\x1b[1mDone initializing CloudflareDUC (${settings.versionFull})\x1b[0m\n\x1b[36m\x1b[1mYou can just let this process run in the background and everything will be done for you, ${zidres.user}!\x1b[0m`);
-                                    console.log(`\x1b[36m\x1b[1mCloudflareDUC will keep all DNS records for the page \x1b[33m\x1b[1m${zidres.name}\x1b[0m\x1b[36m\x1b[1m (Plan: \x1b[33m\x1b[1m${zidres.plan}\x1b[0m\x1b[36m\x1b[1m) up to date.\x1b[0m\n\n`);
-
-                                    if(settings.verboseLogging) console.log(`\n\n\x1b[32m\x1b[1m[initAll]\x1b[0m done initializing\n- zid: ${zoneID}\n- res:\n${JSON.stringify(res, null, 4)}`); 
-                                }
-                                else {
-                                    // err while getting DNS IDs
-                                    return initError("getting DNS IDs", err);
-                                }
-                            });
+                            }
+                            else {
+                                // err while getting zone ID
+                                return initError("getting zone ID", err);
+                            }
                         }
-                        else {
-                            // err while getting zone ID
-                            return initError("getting zone ID", err);
-                        }
-                    }
+                    });
+                }).catch(err => {
+                    return initError("reading the settings.cfg file", err);
                 });
-            }).catch(err => {
-                return initError("reading the settings.cfg file", err);
-            });
-        }
+            }
+        }).catch(() => {
+            return initError("checking internet connection", "A connection to the internet couldn't be established, please check your internet connection and restart CloudflareDUC.\nAlso check whether a firewall, proxy or group policy is blocking the requests from CloudflareDUC.")
+        });
     }
     catch(err) {
         return initError("initializing (general error)", err);
@@ -110,7 +116,7 @@ const initAll = () => {
 const initError = (title, desc) => {
     console.log(`\n\x1b[31m\x1b[1m[Error] \x1b[0mEncountered an error while ${title}.\nDetailed error message:\n${desc}\n\n`);
     logger("startupError", `Error while initializing (Error while ${title})`, desc);
-    setTimeout(()=>process.exit(1), 20000);
+    process.exit(1);
     return true;
 };
 
