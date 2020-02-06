@@ -1,22 +1,35 @@
+const debuggerActive = typeof v8debug === "object" || /--debug|--inspect/.test(process.execArgv.join(" "));
 const nodeWrap = require("node-wrap");
-const whash = require("workspace-hash");
+// const wHash = require("workspace-hash");
+const settings = require("./intsettings");
 
-const whopts = {
-    algorithm: "md5",
-    digest: "hex"
-};
 
-whash(whopts.algorithm, whopts.digest, {
-    outputFile: "../integrity." + whopts.algorithm,
-    excludeFiles: ["settings.cfg", "wrapper.log", "error.log", ".env"]
-}).then(result => {
-    console.log("\x1b[32m\x1b[1m[workspace-hash]\x1b[0m:  (" + whopts.algorithm + "/" + whopts.digest + ": " + result + ")");
-});
+// wHash("md5", "hex", {
+//     excludeFiles: [],
+//     excludeFolders: [],
+//     outputFile: "./hash.md5"
+// }).then(hash => {
+//     startWrap();
+// }).catch(err => {
+//     startWrap();
+// });
 
-nodeWrap("./index.js", {
-    console: true,
-    crashTimeout: 3000,
-    logTimestamp: true,
-    logFile: "./wrapper.log",
-    bootLoopDetection: 6000
-});
+
+if(debuggerActive !== true) {
+    if(!settings.prodMode) { // not in production mode, enable wrapper
+        nodeWrap("./src/main.js", {
+            console: true,
+            logFile: "./logs/wrapper.log",
+            logTimestamp: true,
+            crashTimeout: 10000
+        }, () => {
+            // on start
+        }, () => {
+            // on crash
+        });
+
+        return; // not in debugger and also not in prod mode, so return so that the main script doesn't get run twice
+    }
+    else require("./main");
+}
+else require("./main"); // either in debugger or in prod mode, so just run the main script
