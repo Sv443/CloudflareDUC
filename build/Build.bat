@@ -21,7 +21,7 @@ goto verify_prodmode
 cd %CFDUC_PROJ_DIR%
 cd ..
 
-call node src/isProdMode.js
+call node tools/isProdMode.js
 
 IF %ERRORLEVEL% == 1 (
     echo Error: The production mode is turned off. Please turn it on in the file "src/intsettings.js"
