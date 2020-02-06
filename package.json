@@ -1,10 +1,18 @@
 {
   "name": "cfduc",
   "version": "0.7.0",
-  "description": "An easy to use Dynamic Update Client for Cloudflare that only needs minimal configuration",
-  "main": "src/wrapper.js",
+  "description": "An easy to use Dynamic Update Client for your domains powered by Cloudflare",
+  "main": "CloudflareDUC.js",
+  "homepage": "https://github.com/Sv443/CloudflareDUC#readme",
+  "author": {
+    "name": "Sv443",
+    "email": "sven.fehler@web.de",
+    "url": "https://github.com/Sv443"
+  },
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "isProd": "node tools/isProdMode && exit $?"
   },
   "keywords": [
     "js",
@@ -13,14 +21,15 @@
     "dynamic",
     "update",
     "client",
+    "duc",
+    "dns",
+    "domain",
     "cloudflare"
   ],
   "bugs": {
+    "email": "sven.fehler@web.de",
     "url": "https://github.com/Sv443/CloudflareDUC/issues"
   },
-  "homepage": "https://github.com/Sv443/CloudflareDUC#readme",
-  "author": "Sv443",
-  "license": "MIT",
   "dependencies": {
     "dotenv": "^7.0.0",
     "node-wrap": "^0.2.0",
