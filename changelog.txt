@@ -1,0 +1,52 @@
+
+
+[CURRENT: release-1.0] - The third complete rewrite :(
+    - Now using `svcorelib` instead of `svjsl`
+
+[closed-beta-0.7]
+    - implemented API call for DNS record check, making CF-DUC way more reliable
+    - removed webhook for now
+    - removed tons of options in "settings.cfg"
+    - added ESLint support
+    - fixed wrapping script
+
+[closed-beta-0.6]
+    - Improved comments in "settings.cfg" file
+    - Added more error catching and prevention to have more stability <#18>
+    - More overall logging to log files
+
+[closed-beta-0.5] - Optimizations and bug fixes
+    - Fixed crashes when getting unexpected responses from IP getters or the Cloudflare API <#13 and #15>
+    - Fixed "xhr is not defined" error <#16>
+    - Fixed bug of CF-DUC crashing if there are other types of DNS records present (not just A or AAAA) <#17>
+    - Improved wrapper and main scripts to support the VS Code debugger
+    - Added legend at the top of this document
+    - Removed boot loop detection so CF-DUC doesn't die as easily in an outage (like the one that happened on July 3rd 2019)
+
+[closed-beta-0.4] - Complete rewrite: more stability, more efficient code
+    - asynchronous approach
+        - doesn't take as long to start up
+        - is way more reliable
+        - ensures that things are done in the correct order
+    - better config reader (from my closed beta project JServ)
+    - more reliable public IP getter
+        - now using a RESTful API instead of a npm package
+        - backup IP getter for when one of them is down or returns an error
+    - added optional webhook feature
+	- minor fixes (duplicate console messages, ...)
+    - temporary error catcher
+    - removed package "workspace-hash" for now
+
+[alpha-0.3] - (abandoned version)
+    - added command line interface UI
+    - minor things fixed or changed here and there (what I mean by that is I didn't keep track like a true developer)
+
+[alpha-0.2] - Full error handler, better sorted source code, a bit of quality assurance
+    - removed yesno library and added selfmade shutdown prompt
+    - replaced public-ip library with get-my-ip and then to externalip
+    - added error handler with full descriptions
+    - updated dependencies
+    - added package "node-wrap" to wrap the DUC and restart it if it crashes
+    - added package "workspace-hash" to create a checksum to verify the integrity of the DUC
+
+[alpha-0.1] - Basic functionality but almost no error catching and QA

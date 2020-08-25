@@ -1,7 +1,0 @@
-[Wed Feb 06 2019 11:40:08 GMT+0100 (Mitteleuropäische Zeit)]:  Process got status code 0 - Options were: {"console":true,"crashTimeout":3000,"logTimestamp":true,"logFile":"./wrapper.log","bootLoopDetection":6000}
-[Wed Feb 06 2019 11:45:04 GMT+0100 (Mitteleuropäische Zeit)]:  Process got status code 0 - Options were: {"console":true,"crashTimeout":3000,"logTimestamp":true,"logFile":"./wrapper.log","bootLoopDetection":6000}
-[Wed Feb 06 2019 11:45:11 GMT+0100 (Mitteleuropäische Zeit)]:  Process got status code 0 - Options were: {"console":true,"crashTimeout":3000,"logTimestamp":true,"logFile":"./wrapper.log","bootLoopDetection":6000}
-[Wed Feb 06 2019 11:45:48 GMT+0100 (Mitteleuropäische Zeit)]:  Process got status code 0 - Options were: {"console":true,"crashTimeout":3000,"logTimestamp":true,"logFile":"./wrapper.log","bootLoopDetection":6000}
-[Wed Feb 06 2019 11:53:09 GMT+0100 (Mitteleuropäische Zeit)]:  Process got status code 1 - Options were: {"console":true,"crashTimeout":3000,"logTimestamp":true,"logFile":"./wrapper.log","bootLoopDetection":6000}
-[Wed Feb 06 2019 11:53:12 GMT+0100 (Mitteleuropäische Zeit)]:  Process got status code 1 - Options were: {"console":true,"crashTimeout":3000,"logTimestamp":true,"logFile":"./wrapper.log","bootLoopDetection":6000}
-[Thu Feb 07 2019 00:28:42 GMT+0100 (GMT+01:00)]:  Process got status code 0 - Options were: {"console":true,"crashTimeout":3000,"logTimestamp":true,"logFile":"./wrapper.log","bootLoopDetection":6000}
