@@ -14,10 +14,10 @@ const { XMLHttpRequest } = require("xmlhttprequest");
  * Sends an HTTP request
  * @param {"GET"|"POST"|"PUT"|"DELETE"} method 
  * @param {String} url 
- * @param {String} apiKey
+ * @param {String} [cfApiKey]
  * @returns {Promise<XHRData>}
  */
-function sendRequest(method, url, apiKey)
+function sendRequest(method, url, cfApiKey)
 {
     return new Promise((res) => {
         let xhr = new XMLHttpRequest();
@@ -26,9 +26,9 @@ function sendRequest(method, url, apiKey)
 
         xhr.setRequestHeader("Content-Type", "application/json");
 
-        if(apiKey && typeof apiKey == "string")
+        if(cfApiKey && typeof cfApiKey == "string")
         {
-            xhr.setRequestHeader("Authorization", `Bearer ${apiKey}`);
+            xhr.setRequestHeader("Authorization", `Bearer ${cfApiKey}`);
         }
 
         xhr.onreadystatechange = () => {
@@ -83,4 +83,4 @@ function sendRequest(method, url, apiKey)
     });
 }
 
-module.exports = { sendRequest };
+module.exports = sendRequest;

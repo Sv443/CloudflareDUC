@@ -1,60 +1,35 @@
 const crypto = require("crypto");
-const scl = require("svcorelib");
 
 
 /**
- * Encrypts a string with the key specified in `.env`
+ * Encrypts a string
  * @param {String} text 
  * @returns {String}
  */
 function encrypt(text)
 {
-    return new Promise((res, rej) => {
-        try
-        {
-            let iv = crypto.randomBytes(16);
-            let cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from("7tedagb7enr4e79xdflsrywd4r2lc55y"), iv);
-            let encrypted = cipher.update(text);
+    let iv = crypto.randomBytes(16);
+    let cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(Buffer.from("7tedagb7enr4e79xdflsrywd4r2lc55y")), iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
 
-            encrypted = Buffer.concat([encrypted, cipher.final()]).toString("hex");
-
-            return res(`${iv.toString("hex")}:${encrypted}`);
-        }
-        catch(err)
-        {
-            return rej(err);
-        }
-    });
+    return `${iv.toString("hex")}:${encrypted.toString("hex")}`;
 }
 
 /**
- * Decrypts a string with the key specified in `.env`
+ * Decrypts a string
  * @param {String} text 
  * @returns {String|null}
  */
 function decrypt(text)
 {
     let textParts = text.split(":");
+
     let iv = Buffer.from(textParts.shift(), "hex");
-    let encryptedText = Buffer.from(textParts.join(":"), "binary");
-    let decipher = crypto.createDecipheriv("aes-256-cbc", Buffer.from("7tedagb7enr4e79xdflsrywd4r2lc55y"), iv);
+    let encryptedText = Buffer.from(textParts.join(":"), "hex");
+    let decipher = crypto.createDecipheriv("aes-256-cbc", Buffer.from(Buffer.from("7tedagb7enr4e79xdflsrywd4r2lc55y")), iv);
     let decrypted = decipher.update(encryptedText);
-
-    let finalDecipher = null;
-    try
-    {
-        finalDecipher = decipher.final();
-    }
-    catch(err)
-    {
-        scl.unused(err);
-        return null;
-    }
-
-    if(finalDecipher == null)
-        return null;
-
-    decrypted = Buffer.concat([decrypted, finalDecipher]);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
 
     return decrypted.toString();
 }
