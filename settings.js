@@ -1,4 +1,5 @@
 const settings = {
+    name: "CloudflareDUC",
     verboseLogging: true,
     init: {
         ensureDirectories: [

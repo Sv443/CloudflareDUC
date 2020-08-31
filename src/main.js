@@ -3,8 +3,11 @@ const xhr = require("./xhr");
 const fetchIP = require("./fetchIP");
 const crypto = require("./crypto");
 const dbg = require("./dbg");
+
+const scl = require("svcorelib");
 require("dotenv").config();
 
+const col = scl.colors.fg;
 const settings = require("../settings");
 
 
@@ -44,7 +47,25 @@ function mainMenu()
 
     console.log(`Supervising ${records} record${records > 1 ? "s" : ""} of ${cfg.domains.length} domain${cfg.domains.length > 1 ? "s" : ""}`);
 
-    // SCL SelectionPrompt
+    // SCL SelectionMenu
+    let sm = new scl.SelectionMenu(`${settings.name} - Main Menu:`, { cancelable: false });
+
+    let options = [
+        "Monitor",
+        "List Domains",
+        "Add Domain or Record",
+        "Exit"
+    ];
+
+    sm.setOptions(options);
+
+    sm.onSubmit().then(result => {
+        console.log(`Selected option ${result.option.description}`);
+    }).catch(err => {
+        console.error(`${col.red}${err}${col.rst}`);
+    });
+
+    sm.open();
 }
 
 /**
@@ -71,7 +92,6 @@ async function fetchLoop()
         ipv6 = await fetchIP("ipv6");
     
     dbg("FetchLoop", `Fetched IP: ${ipv4} (v4) / ${ipv6} (v6)`);
-
 
     checkRecords();
 }
