@@ -1,9 +1,10 @@
 const fs = require("fs-extra");
 const scl = require("svcorelib");
 const crypto = require("./crypto");
-const readline = require("readline");
+const xhr = require("./xhr");
+const prompts = require("prompts");
 
-const rl = readline.createInterface(process.stdin, process.stdout);
+const settings = require("../settings");
 
 const col = scl.colors.fg;
 
@@ -37,7 +38,7 @@ const col = scl.colors.fg;
  */
 function exists()
 {
-    return fs.existsSync("./.config.json");
+    return fs.existsSync(settings.configPath);
 }
 
 /**
@@ -57,7 +58,16 @@ function create()
  */
 function load()
 {
-    return JSON.parse(fs.readFileSync("./.config.json").toString());
+    return JSON.parse(fs.readFileSync(settings.configPath).toString());
+}
+
+/**
+ * Deletes the config file
+ * @returns {void}
+ */
+function remove()
+{
+    fs.unlinkSync(settings.configPath);
 }
 
 async function runPrompts()
@@ -72,6 +82,8 @@ async function runPrompts()
             domains: []
         };
 
+        process.stdout.write(col.rst);
+
         if(!process.stdin || !process.stdin.isTTY)
         {
             console.log(`${col.red}\nTerminal can't be read from or doesn't have a stdin channel.${col.rst}\n\n`);
@@ -82,25 +94,113 @@ async function runPrompts()
 
         try
         {
-            (async () => {
+            let firstStartProc = async () => {
                 clearConsole();
 
-                config.user.email = await input("Enter your account's E-Mail address:");
+                await firstStartText();
                 
-                let rawApiKey = await input("Enter your API key:");
+                let rawApiKey = await input(`${col.yellow}What is your API key?${col.rst}`, true);
+
+                process.stdout.write("\n\n\n");
+                process.stdout.write("Validating...");
+
+                let dataValid = await apiAccessGranted(rawApiKey);
+
+                process.stdout.cursorTo(0);
+                process.stdout.write("             ");
+                process.stdout.cursorTo(0);
+                
+                if(typeof dataValid == "string")
+                {
+                    process.stdout.write(`${col.red}Error:${col.rst}\n${dataValid}.\nIf you need help, please refer to the installation guide at ${settings.githubURL}#installation\n\n`);
+
+                    await scl.pause("Press any key to try again...");
+                    return firstStartProc();
+                }
+
+                process.stdout.write(`${col.green}Success!${col.rst}\n\n`);
+
                 let encrypted = await crypto.encrypt(rawApiKey);
                 config.user.apiKey = encrypted;
 
+                await scl.pause(`Press any key to confirm the data and continue to the main menu...`);
+                
                 fs.writeFileSync("./.config.json", JSON.stringify(config, null, 4));
 
                 return res();
-            })();
+            };
+
+            firstStartProc();
         }
         catch(err)
         {
             console.log(`${col.red}\nThere was an error while creating the config file: ${err}${col.rst}\n\n`);
             process.exit(1);
         }
+    });
+}
+
+/**
+ * Displays the first start text and asks to confirm the disclaimer
+ * @returns {Promise<undefined>}
+ */
+function firstStartText()
+{
+    return new Promise((pRes) => {
+        console.log(`${col.green}Hello!${col.rst}`);
+        console.log(`This seems to be the first time you are starting ${settings.name} (or you have deleted the config file)`);
+        console.log(`It contains ${scl.colors.fat}really${col.rst} important information so please ${scl.colors.fat}actually${col.rst} read it:`);
+        console.log(`\n`);
+
+        console.log(`${col.red}DISCLAIMER:${col.rst}`);
+        console.log(`${settings.name} will store an API token in the same directory the executable is located in.`);
+        console.log(`Please protect this token like a password and do not share it as that might give unwanted people access to your Cloudlfare account!`);
+        console.log(`The token will be lightly encrypted so general-purpose scraper malware can't easily grab it but note that skilled people can easily decrypt it if they get a hold of it.`);
+        console.log(`To limit the possible amount of damage that could be done, please strictly follow the installation guide as that will ensure the API token only has access to the bare minimum.`);
+        console.log(`\n`);
+
+        prompts({
+            type: "confirm",
+            name: "value",
+            message: "Have you read the disclaimer?",
+            initial: true
+        }).then(res => {
+            if(res.value !== true)
+            {
+                console.log(`\n${col.red}Disclaimer not read / accepted. Exiting process...${col.rst}\n`);
+                process.exit(1);
+            }
+
+            console.log(`\n\n\n`);
+
+            console.log(`You will now be prompted for some data which is necessary to connect to the Cloudflare API`);
+            console.log(`If something is unclear, please refer to the installation guide at ${settings.githubURL}#installation`);
+            console.log(`You can press CTRL+C at any time to cancel`);
+            console.log(`\n`);
+
+            return pRes();
+        });
+    });
+}
+
+/**
+ * Tests if the provided API key has access to the Cloudflare API
+ * @param {String} apiKey 
+ * @returns {Promise<Boolean | String>}
+ */
+function apiAccessGranted(apiKey)
+{
+    return new Promise((pRes) => {
+        xhr("GET", "https://api.cloudflare.com/client/v4/zones", apiKey).then(data => {
+            if(data.status == 200)
+                return pRes(true);
+            else if(data.status == 403)
+                return pRes("This API token doesn't exist or doesn't have the correct access permissions");
+            else if(data.status == 400)
+                return pRes("Entered text is not a valid Cloudflare API token");
+            else
+                return pRes(`Unknown error - status: ${data.status} - err1: ${data.data.errors[0].code} / ${data.data.errors[0].message}`);
+        });
     });
 }
 
@@ -124,18 +224,26 @@ function clearConsole()
 /**
  * Waits for a user to input a string, then resolves promise
  * @param {String} text 
+ * @param {Boolean} [masked=false] Set to true to hide input chars
  * @returns {Promise<String>}
  */
-function input(text)
+function input(text, masked)
 {
-    return new Promise(res => {
-        rl.resume();
-        rl.question(`${text} `, ans => {
-            rl.pause();
-            
-            return res(ans.toString().trim());
+    return new Promise(pRes => {
+        if(typeof masked != "boolean")
+            masked = false;
+
+        prompts({
+            type: (!masked ? "text" : "password"),
+            name: "value",
+            message: text,
+        }).then(result => {
+            return pRes(result.value);
+        }).catch(err => {
+            scl.unused(err);
+            return pRes(null);
         });
     });
 }
 
-module.exports = { exists, create, load };
+module.exports = { exists, create, load, remove };

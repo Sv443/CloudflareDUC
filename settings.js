@@ -1,5 +1,7 @@
 const settings = {
     name: "CloudflareDUC",
+    githubURL: "https://github.com/Sv443/CloudflareDUC",
+    configPath: "./.config.json",
     verboseLogging: true,
     init: {
         ensureDirectories: [

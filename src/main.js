@@ -11,6 +11,10 @@ const col = scl.colors.fg;
 const settings = require("../settings");
 
 
+scl.softShutdown(() => {
+    process.stdout.write(col.rst); // ensure stdout color is reset
+});
+
 var cfg = {};
 var ipv4 = "";
 var ipv6 = "";
@@ -35,7 +39,11 @@ async function initAll()
     setInterval(fetchLoop, settings.fetchLoopInterval * (60 * 1000));
 }
 
-function mainMenu()
+/**
+ * Opens the main menu
+ * Note that this can be called multiple times so no one-time-call code should be called here
+ */
+async function mainMenu()
 {
     let records = 0;
     if(Array.isArray(cfg.domains) && cfg.domains.length > 0)
@@ -50,22 +58,63 @@ function mainMenu()
     // SCL SelectionMenu
     let sm = new scl.SelectionMenu(`${settings.name} - Main Menu:`, { cancelable: false });
 
-    let options = [
-        "Monitor",
-        "List Domains",
-        "Add Domain or Record",
+    sm.setOptions([
+        "Live Monitor",
+        "Info View",
+        "Modify Configuration",
         "Exit"
-    ];
-
-    sm.setOptions(options);
-
-    sm.onSubmit().then(result => {
-        console.log(`Selected option ${result.option.description}`);
-    }).catch(err => {
-        console.error(`${col.red}${err}${col.rst}`);
-    });
+    ]);
 
     sm.open();
+
+    let result = await sm.onSubmit();
+
+    console.log(`Selected option ${result.option.index} (${result.option.description})`);
+
+    switch(result.option.index)
+    {
+        case 0: // Live Monitor
+            liveMonitor();
+        break;
+        case 1: // Info View
+            infoView();
+        break;
+        case 2: // Modify Config
+        {
+            let modSm = new scl.SelectionMenu(`Modify Config`, { cancelable: true });
+
+            modSm.setOptions([
+                "Edit Config",
+                "Recreate Config",
+                "Delete Config",
+                "Back to Main Menu"
+            ]);
+
+            modSm.open();
+
+            let modRes = await modSm.onSubmit();
+
+            switch(modRes)
+            {
+                case 0: // Edit Config
+                    config.edit();
+                break;
+                case 1: // Recreate Config
+                    config.create();
+                break;
+                case 2: // Delete Config
+                    config.remove();
+                break;
+                case 3: // Main Menu
+                    return mainMenu();
+            }
+
+            break;
+        }
+        case 3: // Exit
+            process.exit();
+        break;
+    }
 }
 
 /**
@@ -96,6 +145,9 @@ async function fetchLoop()
     checkRecords();
 }
 
+/**
+ * Gets all records and checks if they should be updated
+ */
 async function checkRecords()
 {
     let records = await getRecords();
@@ -103,6 +155,26 @@ async function checkRecords()
     console.log(records);
 }
 
+/**
+ * Opens the live monitor, showing some stats and live DNS updates
+ */
+function liveMonitor()
+{
+
+}
+
+/**
+ * Opens the info view (list of information about supervised domains, records, etc.)
+ */
+function infoView()
+{
+
+}
+
+/**
+ * Calls the Cloudflare API and returns all the records of the domains specified in the config file
+ * @returns {Promise<Object>}
+ */
 function getRecords()
 {
     return new Promise((pRes, pRej) => {

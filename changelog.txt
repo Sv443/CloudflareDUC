@@ -1,7 +1,15 @@
+---------------------
+  - CloudflareDUC -  
+    Version 1.0.0
+---------------------
 
 
-[CURRENT: release-1.0] - The third complete rewrite :(
+
+[CURRENT: 1.0.0] - The second or third complete rewrite :(
+    - The app now has a full CLI user interface instead of the wonky ass config file
     - Now using `svcorelib` instead of `svjsl`
+    - Now using a bunch of fancy and cool packages instead of DIY-ing everything
+    - Rewrote the documentation to make it more concise and clear
 
 [closed-beta-0.7]
     - implemented API call for DNS record check, making CF-DUC way more reliable
@@ -37,7 +45,7 @@
     - temporary error catcher
     - removed package "workspace-hash" for now
 
-[alpha-0.3] - (abandoned version)
+[alpha-0.3]
     - added command line interface UI
     - minor things fixed or changed here and there (what I mean by that is I didn't keep track like a true developer)
 
