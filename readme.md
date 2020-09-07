@@ -1,9 +1,18 @@
+<div align="center" style="text-align: center">
+
+![CF-DUC icon](./icons/banner_150x125.png)
+
 # CloudflareDUC
+### An easy to use Dynamic DNS Update Client for Cloudflare  
+
+<br>
+
 [![](https://img.shields.io/github/license/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/blob/master/LICENSE) [![](https://img.shields.io/github/issues/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/issues) [![](https://img.shields.io/github/stars/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/)
-### An easy to use Dynamic Update Client for Cloudflare that only needs minimal configuration
+
+</div>
 
 
-<br><br><br>
+<br><br>
 
 
 ## Table of Contents:
