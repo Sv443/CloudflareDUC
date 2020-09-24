@@ -3,6 +3,7 @@ const xhr = require("./xhr");
 const fetchIP = require("./fetchIP");
 const crypto = require("./crypto");
 const dbg = require("./dbg");
+const menus = require("./menus");
 
 const scl = require("svcorelib");
 require("dotenv").config();

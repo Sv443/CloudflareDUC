@@ -3,7 +3,7 @@
 ![CF-DUC icon](./icons/banner_150x125.png)
 
 # CloudflareDUC
-### An easy to use Dynamic DNS Update Client for Cloudflare  
+### A DNS update client for Cloudflare enabled domains  
 
 <br>
 
@@ -21,6 +21,10 @@
     - [Generating an API Token](#generating-an-api-token)
 - **[Troubleshooting](#troubleshooting)**
 - **[Legal Information](#legal-information)**
+    - [License](#license)
+    - [Disclaimer](#disclaimer)
+    - [Data Collection](#data-collection)
+    - [Inquiries / Contact](#inquiries)
 
 ---
 
@@ -71,4 +75,42 @@ Also please protect this token like a password (it kinda is one). If you give it
     In this case either your API token doesn't exist, you have copied/pasted it wrong or it doesn't have the necessary permissions.  
     Make sure the API token is generated just as the ["Generating an API Token"](#generating-an-api-token) section states and try again.
 
+<br><br><br>
+
 ## Legal Information:
+
+<br>
+
+### License:
+CloudflareDUC is licensed under the [MIT license](https://sv443.net/LICENSE)  
+
+<br>
+
+### Disclaimer:
+
+CloudflareDUC will store an API token in the same directory the executable is located in.  
+Please protect this token like a password and do not share it as that might give unwanted people access to your Cloudlfare account!  
+The token will be lightly encrypted so general-purpose scraper malware can't easily grab it but note that skilled people can easily decrypt it if they get a hold of it.  
+To limit the possible amount of damage that could be done, please strictly follow the installation guide as that will ensure the API token only has access to the bare minimum.
+
+<br>
+
+### Data Collection:
+CloudflareDUC does not collect any data about you, except for the data you provide in the initial configuration prompts. All of this data is stored on your own machine and is never transferred to any service but the official Cloudflare API.  
+
+<br>
+
+### Inquiries:
+If you need to contact me, please either [join my Discord server](https://sv443.net/discord) or contact me via E-Mail: [`contact@sv443.net`](mailto:contact@sv443.net)
+
+<br>
+
+### Dependencies:
+CloudflareDUC needs the following dependencies (and their sub-dependencies) to ensure stability, security and maintainability:  
+
+- [dotenv](https://npmjs.com/package/dotenv)
+- [fs-extra](https://npmjs.com/package/fs-extra)
+- [is-ip](https://npmjs.com/package/is-ip)
+- [prompts](https://npmjs.com/package/prompts)
+- [svcorelib](https://npmjs.com/package/svcorelib)
+- [xmlhttprequest](https://npmjs.com/package/xmlhttprequest)
