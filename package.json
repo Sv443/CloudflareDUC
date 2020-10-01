@@ -1,7 +1,7 @@
 {
   "name": "@sv443/cfduc",
   "version": "1.0.0",
-  "description": "An easy to use Dynamic Update Client for Cloudflare that only needs minimal configuration",
+  "description": "A DNS update client for Cloudflare enabled domains",
   "bin": "./src/main.js",
   "main": "CloudflareDUC.js",
   "scripts": {
@@ -20,14 +20,17 @@
   },
   "repository": "https://github.com/Sv443/CloudflareDUC.git",
   "homepage": "https://github.com/Sv443/CloudflareDUC#readme",
-  "author": "Sv443",
+  "author": {
+      "name": "Sv443",
+      "email": "contact@sv443.net",
+      "url": "https://github.com/Sv443"
+  },
   "license": "MIT",
   "dependencies": {
     "cloudflare": "^2.7.0",
     "dotenv": "^8.2.0",
     "fs-extra": "^9.0.1",
     "is-ip": "^3.1.0",
-    "node-wrap": "^0.2.0",
     "prompts": "^2.3.2",
     "svcorelib": "^1.11.1",
     "xmlhttprequest": "^1.8.0"

@@ -1,8 +1,10 @@
 const fs = require("fs-extra");
 const scl = require("svcorelib");
+const prompts = require("prompts");
+
 const crypto = require("./crypto");
 const xhr = require("./xhr");
-const prompts = require("prompts");
+const menus = require("./menus");
 
 const settings = require("../settings");
 
@@ -94,12 +96,28 @@ async function runPrompts()
 
         try
         {
+            let disclaimerAccepted = false;
+
             let firstStartProc = async () => {
                 clearConsole();
 
-                await firstStartText();
+                if(!disclaimerAccepted)
+                    await menus.firstStart();
+
+                disclaimerAccepted = true;
+
+                console.clear();
+                console.log(`\n`);
+
+                console.log(`You will now be prompted for some data which is necessary to connect to the Cloudflare API.`);
+                console.log(`If something is unclear, please refer to the installation guide at ${settings.githubURL}#generating-an-api-token`);
+                console.log(`You can press CTRL+C at any time to cancel.`);
+                console.log(`\n`);
                 
                 let rawApiKey = await input(`${col.yellow}What is your API key?${col.rst}`, true);
+
+                if(rawApiKey === undefined)
+                    process.exit(0);
 
                 process.stdout.write("\n\n\n");
                 process.stdout.write("Validating...");
@@ -112,7 +130,7 @@ async function runPrompts()
                 
                 if(typeof dataValid == "string")
                 {
-                    process.stdout.write(`${col.red}Error:${col.rst}\n${dataValid}.\nIf you need help, please refer to the installation guide at ${settings.githubURL}#installation\n\n`);
+                    process.stdout.write(`${col.red}Error:${col.rst}\n${dataValid}.\nIf you need help, please refer to the installation guide at ${settings.githubURL}#generating-an-api-token\n\n`);
 
                     await scl.pause("Press any key to try again...");
                     return firstStartProc();
@@ -141,49 +159,6 @@ async function runPrompts()
 }
 
 /**
- * Displays the first start text and asks to confirm the disclaimer
- * @returns {Promise<undefined>}
- */
-function firstStartText()
-{
-    return new Promise((pRes) => {
-        console.log(`${col.green}Hello!${col.rst}`);
-        console.log(`This seems to be the first time you are starting ${settings.name} (or you have deleted the config file)`);
-        console.log(`It contains ${scl.colors.fat}really${col.rst} important information so please ${scl.colors.fat}actually${col.rst} read it:`);
-        console.log(`\n`);
-
-        console.log(`${col.red}DISCLAIMER:${col.rst}`);
-        console.log(`${settings.name} will store an API token in the same directory the executable is located in.`);
-        console.log(`Please protect this token like a password and do not share it as that might give unwanted people access to your Cloudlfare account!`);
-        console.log(`The token will be lightly encrypted so general-purpose scraper malware can't easily grab it but note that skilled people can easily decrypt it if they get a hold of it.`);
-        console.log(`To limit the possible amount of damage that could be done, please strictly follow the installation guide as that will ensure the API token only has access to the bare minimum.`);
-        console.log(`\n`);
-
-        prompts({
-            type: "confirm",
-            name: "value",
-            message: "Have you read the disclaimer?",
-            initial: true
-        }).then(res => {
-            if(res.value !== true)
-            {
-                console.log(`\n${col.red}Disclaimer not read / accepted. Exiting process...${col.rst}\n`);
-                process.exit(1);
-            }
-
-            console.log(`\n\n\n`);
-
-            console.log(`You will now be prompted for some data which is necessary to connect to the Cloudflare API`);
-            console.log(`If something is unclear, please refer to the installation guide at ${settings.githubURL}#installation`);
-            console.log(`You can press CTRL+C at any time to cancel`);
-            console.log(`\n`);
-
-            return pRes();
-        });
-    });
-}
-
-/**
  * Tests if the provided API key has access to the Cloudflare API
  * @param {String} apiKey 
  * @returns {Promise<Boolean | String>}
@@ -198,8 +173,10 @@ function apiAccessGranted(apiKey)
                 return pRes("This API token doesn't exist or doesn't have the correct access permissions");
             else if(data.status == 400)
                 return pRes("Entered text is not a valid Cloudflare API token");
+            else if(data.status == 429)
+                return pRes("You were doing this too much and the Cloudflare API has temporarily blocked you. Please try again in about an hour.");
             else
-                return pRes(`Unknown error - status: ${data.status} - err1: ${data.data.errors[0].code} / ${data.data.errors[0].message}`);
+                return pRes(`Unknown error - status: ${data.status} - err1: [${data.data.errors[0].code}] ${data.data.errors[0].message}`);
         });
     });
 }
