@@ -1,6 +1,5 @@
 const fs = require("fs-extra");
 const scl = require("svcorelib");
-const prompts = require("prompts");
 
 const crypto = require("./crypto");
 const xhr = require("./xhr");
@@ -29,7 +28,7 @@ const col = scl.colors.fg;
  * @prop {Number} createdAt
  * @prop {Object} user
  * @prop {String} user.email
- * @prop {String} user.apiKey
+ * @prop {String} user.apiToken
  * @prop {Array<DnsDomain>} domains
  */
 
@@ -79,7 +78,7 @@ async function runPrompts()
             createdAt: new Date().getTime(),
             user: {
                 email: "",
-                apiKey: ""
+                apiToken: ""
             },
             domains: []
         };
@@ -114,7 +113,7 @@ async function runPrompts()
                 console.log(`You can press CTRL+C at any time to cancel.`);
                 console.log(`\n`);
                 
-                let rawApiKey = await input(`${col.yellow}What is your API key?${col.rst}`, true);
+                let rawApiKey = await menus.input(`${col.yellow}What is your API key?${col.rst}`, true);
 
                 if(rawApiKey === undefined)
                     process.exit(0);
@@ -139,7 +138,7 @@ async function runPrompts()
                 process.stdout.write(`${col.green}Success!${col.rst}\n\n`);
 
                 let encrypted = await crypto.encrypt(rawApiKey);
-                config.user.apiKey = encrypted;
+                config.user.apiToken = encrypted;
 
                 await scl.pause(`Press any key to confirm the data and continue to the main menu...`);
                 
@@ -160,13 +159,13 @@ async function runPrompts()
 
 /**
  * Tests if the provided API key has access to the Cloudflare API
- * @param {String} apiKey 
+ * @param {String} apiToken 
  * @returns {Promise<Boolean | String>}
  */
-function apiAccessGranted(apiKey)
+function apiAccessGranted(apiToken)
 {
     return new Promise((pRes) => {
-        xhr("GET", "https://api.cloudflare.com/client/v4/zones", apiKey).then(data => {
+        xhr("GET", "https://api.cloudflare.com/client/v4/zones", apiToken).then(data => {
             if(data.status == 200)
                 return pRes(true);
             else if(data.status == 403)
@@ -196,31 +195,6 @@ function clearConsole()
     {
         return;
     }
-}
-
-/**
- * Waits for a user to input a string, then resolves promise
- * @param {String} text 
- * @param {Boolean} [masked=false] Set to true to hide input chars
- * @returns {Promise<String>}
- */
-function input(text, masked)
-{
-    return new Promise(pRes => {
-        if(typeof masked != "boolean")
-            masked = false;
-
-        prompts({
-            type: (!masked ? "text" : "password"),
-            name: "value",
-            message: text,
-        }).then(result => {
-            return pRes(result.value);
-        }).catch(err => {
-            scl.unused(err);
-            return pRes(null);
-        });
-    });
 }
 
 module.exports = { exists, create, load, remove };

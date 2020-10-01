@@ -1,6 +1,8 @@
 const scl = require("svcorelib");
 const prompts = require("prompts");
 
+const config = require("./config");
+
 const col = scl.colors.fg;
 const settings = require("../settings");
 
@@ -12,7 +14,34 @@ const settings = require("../settings");
 function main()
 {
     return new Promise(pRes => {
+        scl.unused(pRes);
+        // SCL SelectionMenu
+        let sm = new scl.SelectionMenu(`${settings.name} - Main Menu:`, { cancelable: false });
 
+        sm.setOptions([
+            "Live Monitor",
+            "Info View",
+            "Modify Configuration",
+            "Exit"
+        ]);
+
+        sm.open();
+
+        sm.onSubmit().then(result => {
+            console.log(`Selected option ${result.option.index} (${result.option.description})`);
+
+            switch(result.option.index)
+            {
+                case 0: // Live Monitor
+                    return liveMonitor();
+                case 1: // Info View
+                    return infoView();
+                case 2: // Modify Config
+                    return modifyConfig();
+                case 3: // Exit
+                    return process.exit(0);
+            }
+        });
     });
 }
 
@@ -52,4 +81,90 @@ function firstStart()
     });
 }
 
-module.exports = { main, firstStart };
+/**
+ * Opens the live monitor, showing some stats and live DNS updates
+ */
+function liveMonitor()
+{
+
+}
+
+/**
+ * Opens the info view (list of information about supervised domains, records, etc.)
+ */
+function infoView()
+{
+
+}
+
+function modifyConfig()
+{
+    let modSm = new scl.SelectionMenu(`Modify Config`, { cancelable: true });
+
+    modSm.setOptions([
+        "Edit Config",
+        "Recreate Config",
+        "Delete Config",
+        "Back to Main Menu"
+    ]);
+
+    modSm.locale.cancel = "Back";
+
+    modSm.open();
+
+    let modMenFn = (async () => {
+        let modRes = await modSm.onSubmit();
+
+        switch(modRes.option.index)
+        {
+            case 0: // Edit Config
+                // config.edit();
+                console.log("Work in Progress!\nPlease use the \"Recreate\" option instead.");
+                scl.pause().then(() => {
+                    return modifyConfig();
+                });
+            break;
+            case 1: // Recreate Config
+                config.create();
+            break;
+            case 2: // Delete Config
+                config.remove();
+
+                console.log(`${settings.name} will now exit. You may immediately restart it to trigger the initial prompt again.`);
+                scl.pause().then(() => process.exit(0) );
+            break;
+            case 3: // Main Menu
+            default:
+                return main();
+        }
+    });
+
+    return modMenFn();
+}
+
+/**
+ * Waits for a user to input a string, then resolves promise
+ * @param {String} text 
+ * @param {Boolean} [masked=false] Set to true to hide input chars
+ * @returns {Promise<String>}
+ */
+function input(text, masked)
+{
+    return new Promise(pRes => {
+        if(typeof masked != "boolean")
+            masked = false;
+
+        prompts({
+            type: (!masked ? "text" : "password"),
+            name: "value",
+            message: text,
+        }).then(result => {
+            return pRes(result.value);
+        }).catch(err => {
+            scl.unused(err);
+            return pRes(null);
+        });
+    });
+}
+
+module.exports = { main, firstStart, input };

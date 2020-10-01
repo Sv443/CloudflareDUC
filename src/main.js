@@ -1,9 +1,10 @@
 const config = require("./config");
-const xhr = require("./xhr");
+// const xhr = require("./xhr");
 const fetchIP = require("./fetchIP");
-const crypto = require("./crypto");
+// const crypto = require("./crypto");
 const dbg = require("./dbg");
 const menus = require("./menus");
+const api = require("./api");
 
 const scl = require("svcorelib");
 require("dotenv").config();
@@ -27,6 +28,8 @@ async function initAll()
 
     cfg = await config.load();
 
+    await api.init(cfg.user.apiToken);
+
     let guiEnabled = true;
     process.argv.forEach(arg => {
         if(arg == "--nogui" || arg == "-n")
@@ -34,88 +37,10 @@ async function initAll()
     });
 
     if(guiEnabled)
-        mainMenu();
+        menus.main();
     
     fetchLoop();
     setInterval(fetchLoop, settings.fetchLoopInterval * (60 * 1000));
-}
-
-/**
- * Opens the main menu
- * Note that this can be called multiple times so no one-time-call code should be called here
- */
-async function mainMenu()
-{
-    let records = 0;
-    if(Array.isArray(cfg.domains) && cfg.domains.length > 0)
-    {
-        cfg.domains.forEach(domain => {
-            records += domain.records.length;
-        });
-    }
-
-    console.log(`Supervising ${records} record${records > 1 ? "s" : ""} of ${cfg.domains.length} domain${cfg.domains.length > 1 ? "s" : ""}`);
-
-    // SCL SelectionMenu
-    let sm = new scl.SelectionMenu(`${settings.name} - Main Menu:`, { cancelable: false });
-
-    sm.setOptions([
-        "Live Monitor",
-        "Info View",
-        "Modify Configuration",
-        "Exit"
-    ]);
-
-    sm.open();
-
-    let result = await sm.onSubmit();
-
-    console.log(`Selected option ${result.option.index} (${result.option.description})`);
-
-    switch(result.option.index)
-    {
-        case 0: // Live Monitor
-            liveMonitor();
-        break;
-        case 1: // Info View
-            infoView();
-        break;
-        case 2: // Modify Config
-        {
-            let modSm = new scl.SelectionMenu(`Modify Config`, { cancelable: true });
-
-            modSm.setOptions([
-                "Edit Config",
-                "Recreate Config",
-                "Delete Config",
-                "Back to Main Menu"
-            ]);
-
-            modSm.open();
-
-            let modRes = await modSm.onSubmit();
-
-            switch(modRes)
-            {
-                case 0: // Edit Config
-                    config.edit();
-                break;
-                case 1: // Recreate Config
-                    config.create();
-                break;
-                case 2: // Delete Config
-                    config.remove();
-                break;
-                case 3: // Main Menu
-                    return mainMenu();
-            }
-
-            break;
-        }
-        case 3: // Exit
-            process.exit();
-        break;
-    }
 }
 
 /**
@@ -151,73 +76,57 @@ async function fetchLoop()
  */
 async function checkRecords()
 {
-    let records = await getRecords();
+    let records = await api.getAllRecords();
 
-    console.log(records);
+    dbg("ChkRecords", `Records found: ${records ? records.length : "none"}`);
 }
 
-/**
- * Opens the live monitor, showing some stats and live DNS updates
- */
-function liveMonitor()
-{
+// /**
+//  * Calls the Cloudflare API and returns all the records of the domains specified in the config file
+//  * @returns {Promise<Object>}
+//  */
+// function getRecords()
+// {
+//     return new Promise((pRes, pRej) => {
+//         let promises = [];
 
-}
+//         cfg.domains.forEach(domain => {
+//             let zone_id = domain.id;
 
-/**
- * Opens the info view (list of information about supervised domains, records, etc.)
- */
-function infoView()
-{
+//             // let fetchRecordsUrl = `https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records`;
 
-}
+//             // promises.push(new Promise((res) => {
+//             //     let records = [];
+//             //     let apiToken = crypto.decrypt(cfg.user.apiToken);
 
-/**
- * Calls the Cloudflare API and returns all the records of the domains specified in the config file
- * @returns {Promise<Object>}
- */
-function getRecords()
-{
-    return new Promise((pRes, pRej) => {
-        let promises = [];
-
-        cfg.domains.forEach(domain => {
-            let zone_id = domain.id;
-
-            let fetchRecordsUrl = `https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records`;
-
-            promises.push(new Promise((res) => {
-                let records = [];
-                let apiKey = crypto.decrypt(cfg.user.apiKey);
-
-                xhr("GET", fetchRecordsUrl, apiKey).then(result => {
-                    if(!result.error)
-                    {
-                        result.data["result"].forEach(record => {
-                            if(record.type != "A" && record.type != "AAAA")
-                                return;
+//             //     xhr("GET", fetchRecordsUrl, apiToken).then(result => {
+//             //         if(!result.error)
+//             //         {
+//             //             result.data["result"].forEach(record => {
+//             //                 if(record.type != "A" && record.type != "AAAA")
+//             //                     return;
                             
-                            records.push({
-                                id: record.id,
-                                name: record.name,
-                                type: record.type,
-                                content: record.content
-                            });
-                        });
+//             //                 records.push({
+//             //                     id: record.id,
+//             //                     name: record.name,
+//             //                     type: record.type,
+//             //                     content: record.content
+//             //                 });
+//             //             });
 
-                        return res(records);
-                    }
-                })
-            }));
-        });
+//             //             return res(records);
+//             //         }
+//             //     })
+//             // }));
+//         });
 
-        Promise.all(promises).then(res => {
-            console.log(res);
-            return pRes(res);
-        }).catch(err => {
-            return pRej(err);
-        });
-    });
-}
+//         Promise.all(promises).then(res => {
+//             console.log(res);
+//             return pRes(res);
+//         }).catch(err => {
+//             return pRej(err);
+//         });
+//     });
+// }
 
 initAll();
