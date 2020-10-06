@@ -13,6 +13,7 @@ const col = scl.colors.fg;
 const settings = require("../settings");
 
 
+/** @type {config.UserConfigObj} */
 var cfg = {};
 var ipv4 = "";
 var ipv6 = "";
