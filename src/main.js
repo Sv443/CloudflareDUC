@@ -16,6 +16,7 @@ const settings = require("../settings");
 var cfg = {};
 var ipv4 = "";
 var ipv6 = "";
+var guiEnabled = true;
 
 async function initAll()
 {
@@ -60,7 +61,6 @@ async function initAll()
     if(errored)
         return;
 
-    let guiEnabled = true;
     process.argv.forEach(arg => {
         if(arg == "--nogui" || arg == "-n")
             guiEnabled = false;
@@ -81,24 +81,37 @@ async function initAll()
 async function fetchLoop()
 {
     let aRecords = 0;
-    let aaaaRecords = 0;
+    let a4Records = 0;
 
     cfg.domains.forEach(domain => {
         domain.records.forEach(record => {
             if(record.type == "A")
                 aRecords++;
             else if(record.type == "AAAA")
-                aaaaRecords++;
+                a4Records++;
         });
     });
     
     if(aRecords > 0)
         ipv4 = await fetchIP("ipv4");
 
-    if(aaaaRecords > 0)
+    if(a4Records > 0)
         ipv6 = await fetchIP("ipv6");
-    
-    dbg("FetchLoop", `Fetched IP: ${ipv4} (v4) / ${ipv6} (v6)`);
+
+    if(aRecords <= 0 && a4Records <= 0)
+    {
+        if(!guiEnabled)
+        {
+            console.log(`${col.red}No updatable records were found${col.rst}`);
+            console.log(`Please start ${settings.name} without the ${col.yellow}--nogui${col.rst} or ${col.yellow}-n${col.rst} argument and configure the record(s) you want to be updated\n`);
+            
+            process.exit(1);
+        }
+
+        dbg("FetchLoop", `No records found - not fetching IP`);
+    }
+    else
+        dbg("FetchLoop", `Fetched IP: ${ipv4} (v4) / ${ipv6} (v6)`);
 
     checkRecords();
 }
