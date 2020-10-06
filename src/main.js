@@ -11,6 +11,7 @@ require("dotenv").config();
 
 const col = scl.colors.fg;
 const settings = require("../settings");
+const prompts = require("prompts");
 
 
 /** @type {config.UserConfigObj} */
@@ -19,8 +20,19 @@ var ipv4 = "";
 var ipv6 = "";
 var guiEnabled = true;
 
+/**
+ * Initializes everything and starts CF-DUC
+ */
 async function initAll()
 {
+    process.argv.forEach(arg => {
+        if(arg == "--nogui" || arg == "-n")
+            guiEnabled = false;
+    });
+
+    if(guiEnabled === true)
+        await splashScreen();
+
     if(!config.exists())
         await config.create();
 
@@ -36,36 +48,57 @@ async function initAll()
     {
         errored = true;
 
-        let countdown = settings.restartInterval;
-        let countdownIv = setInterval(() => {
-            let logMsgs = [];
-            
-            console.clear();
+        console.clear();
 
-            logMsgs.push(`\n${col.red}No Internet Connection or Cloudflare API is down${col.rst}`);
-            logMsgs.push(`You either don't have an internet connection or the Cloudflare API couldn't be reached.\n`);
-            logMsgs.push(`${settings.name} will retry the connection in ${col.yellow}${countdown}${col.rst} seconds...`);
-            logMsgs.push(`\n`);
+        if(config.exists())
+        {
+            console.log(`\n${col.red}Can't communicate with the Cloudflare API${col.rst}`);
+            console.log(`Your configuration file might be out of date or corrupted.\n`);
 
-            process.stdout.write(logMsgs.join("\n"));
+            let resp = await prompts({
+                type: "confirm",
+                message: "Do you want to regenerate the config file?",
+                name: "value"
+            });
 
-            countdown--;
-
-            if(countdown < 0)
+            if(resp.value === true)
             {
-                clearInterval(countdownIv);
+                config.remove();
+                await config.create();
                 return initAll();
             }
-        }, 1000);
+            else
+            {
+                console.log(`Not prompting to regenerate config.`);
+                console.log(`Exiting...`);
+                process.exit(0);
+            }
+        }
+        else
+        {
+            let countdown = settings.restartInterval;
+            let countdownIv = setInterval(() => {
+                let logMsgs = [];
+
+                logMsgs.push(`\n${col.red}No Internet Connection or Cloudflare API is down${col.rst}`);
+                logMsgs.push(`You either don't have an internet connection or the Cloudflare API couldn't be reached.\n`);
+                logMsgs.push(`${settings.name} will retry the connection in ${col.yellow}${countdown}${col.rst} seconds...\n\n`);
+
+                process.stdout.write(logMsgs.join("\n"));
+
+                countdown--;
+
+                if(countdown < 0)
+                {
+                    clearInterval(countdownIv);
+                    return initAll();
+                }
+            }, 1000);
+        }
     }
 
     if(errored)
         return;
-
-    process.argv.forEach(arg => {
-        if(arg == "--nogui" || arg == "-n")
-            guiEnabled = false;
-    });
 
     if(guiEnabled)
         menus.main();
@@ -74,6 +107,29 @@ async function initAll()
     
     fetchLoop();
     setInterval(fetchLoop, settings.fetchLoopInterval * (60 * 1000));
+}
+
+/**
+ * Displays the splash screen for a few seconds
+ */
+async function splashScreen()
+{
+    return new Promise(pRes => {
+        let loadingStage = 1;
+        let iv = setInterval(() => {
+            console.clear();
+
+            if(loadingStage == 4)
+            {
+                clearInterval(iv);
+                return pRes();
+            }
+
+            console.log(getAsciiLogo(loadingStage));
+
+            loadingStage++;
+        }, (settings.init.splashScreenTime * 1000) / 3);
+    });
 }
 
 /**
@@ -174,5 +230,51 @@ async function checkRecords()
 //         });
 //     });
 // }
+
+/**
+ * Returns CF-DUC's logo as colored ASCII art
+ * @param {Number} [loadingStage] Between 1 and 3
+ */
+function getAsciiLogo(loadingStage)
+{
+    let darkYellow = "\x1b[2m\x1b[33m";
+    let darkWhite = "\x1b[2m\x1b[37m";
+
+    let loadingDots = "";
+    for(let i = 0; i < loadingStage; i++)
+        loadingDots += "  ▄";
+
+    let retStr = `\
+${darkYellow}                                     *,******/,#,.                      ${col.yellow}##${col.rst}
+${darkYellow}                               ,*******************/*,               ${col.yellow}#####${col.rst}
+${darkYellow}                            ****************************..         ${col.yellow}#######${col.rst}
+${darkYellow}                          ********************************.     ${col.yellow}##########${col.rst}
+${darkYellow}                         *********************************/** ${col.yellow}##/##########${col.rst}
+${darkYellow}             /*********************************************/**   ${col.yellow}##########${col.rst}
+${darkYellow}            */***********************************************,  ${col.yellow}######## \\#${col.rst}
+${darkYellow}           ,************************************************,  ${col.yellow}#########${col.rst}
+${darkYellow}           .*********************************************/**  ${col.yellow}##########${col.rst}
+${darkYellow}     ****************************´´´´´´´´´´´´´´´´´´´´´´´´´´   ${col.yellow}\`########${col.rst}
+${darkYellow}  ,*/*****************,,,,,,,,,                             ${col.yellow}     ######${col.rst}
+${darkYellow},,****************************************************     ${col.yellow}##\\   \\####${col.rst}
+${darkYellow}*****************************************************/**  ${col.yellow}###########${col.rst}
+${darkYellow}*****************************************************/**${col.yellow}############${col.rst}
+
+${darkWhite}             %%%%%%%%%%%        %%%%%%    %%%%%%%       %%%%%%%%${col.rst}
+${darkWhite}             %%%%%%%%%%%%%%%    %%%%%%    %%%%%%%   %%%%%%%%%%%%%%${col.rst}
+${darkWhite}             %%%%%%  %%%%%%%%%  %%%%%%    %%%%%%%  %%%%%%    %%%%${col.rst}
+${darkWhite}             %%%%%%     %%%%%%% %%%%%%    %%%%%%% %%%%%%${col.rst}
+${darkWhite}             %%%%%%     %%%%%%% %%%%%%    %%%%%%% %%%%%${col.rst}
+${darkWhite}             %%%%%%     %%%%%%% %%%%%%    %%%%%%% %%%%%%${col.rst}
+${darkWhite}             %%%%%%    %%%%%%%  %%%%%%    %%%%%%% %%%%%%%    %%%%${col.rst}
+${darkWhite}             %%%%%%%%%%%%%%%%%  %%%%%%%% %%%%%%%   %%%%%%%%%%%%%%%${col.rst}
+${darkWhite}             %%%%%%%%%%%%%%%     %%%%%%%%%%%%%%      %%%%%%%%%%%${col.rst}
+
+
+                 █    █▀█  ▄▀█  █▀▄  █  █▄ █  █▀▀
+                 █▄▄  █▄█  █▀█  █▄▀  █  █ ▀█  █▄█${loadingDots}`;
+
+    return retStr;
+}
 
 module.exports = { initAll };
