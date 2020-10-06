@@ -1,9 +1,10 @@
 const fs = require("fs-extra");
 const scl = require("svcorelib");
+const prompts = require("prompts");
 
 const crypto = require("./crypto");
 const xhr = require("./xhr");
-const menus = require("./menus");
+const input = require("./input");
 
 const settings = require("../settings");
 
@@ -27,7 +28,6 @@ const col = scl.colors.fg;
  * @typedef {Object} UserConfigObj
  * @prop {Number} createdAt
  * @prop {Object} user
- * @prop {String} user.email
  * @prop {String} user.apiToken
  * @prop {Array<DnsDomain>} domains
  */
@@ -49,6 +49,7 @@ function exists()
 function create()
 {
     return new Promise((res) => {
+        remove();
         runPrompts().then(() => res());
     });
 }
@@ -68,7 +69,8 @@ function load()
  */
 function remove()
 {
-    fs.unlinkSync(settings.configPath);
+    if(fs.existsSync(settings.configPath))
+        fs.unlinkSync(settings.configPath);
 }
 
 async function runPrompts()
@@ -77,7 +79,6 @@ async function runPrompts()
         let config = {
             createdAt: new Date().getTime(),
             user: {
-                email: "",
                 apiToken: ""
             },
             domains: []
@@ -101,7 +102,7 @@ async function runPrompts()
                 clearConsole();
 
                 if(!disclaimerAccepted)
-                    await menus.firstStart();
+                    await firstStart();
 
                 disclaimerAccepted = true;
 
@@ -113,7 +114,7 @@ async function runPrompts()
                 console.log(`You can press CTRL+C at any time to cancel.`);
                 console.log(`\n`);
                 
-                let rawApiKey = await menus.input(`${col.yellow}What is your API key?${col.rst}`, true);
+                let rawApiKey = await input(`${col.yellow}What is your API token?${col.rst}`, true);
 
                 if(rawApiKey === undefined)
                     process.exit(0);
@@ -154,6 +155,42 @@ async function runPrompts()
             console.log(`${col.red}\nThere was an error while creating the config file: ${err}${col.rst}\n\n`);
             process.exit(1);
         }
+    });
+}
+
+/**
+ * Displays the first start text and asks to confirm the disclaimer
+ * @returns {Promise}
+ */
+function firstStart()
+{
+    return new Promise(pRes => {
+        console.log(`${col.green}Hello!${col.rst}`);
+        console.log(`This seems to be the first time you are starting ${settings.name} (or you have deleted the config file)`);
+        console.log(`The following disclaimer contains ${scl.colors.fat}really${col.rst} important information so please ${scl.colors.fat}actually${col.rst} read it:`);
+        console.log(`\n`);
+
+        console.log(`${col.red}DISCLAIMER:${col.rst}`);
+        console.log(`${settings.name} will store an API token in the same directory the executable is located in.`);
+        console.log(`Please protect this token like a password and do not share it as that might give unwanted people access to your Cloudflare account!`);
+        console.log(`The token will be lightly encrypted so general-purpose scraper malware can't easily grab it but note that skilled people can easily decrypt it if they get a hold of it.`);
+        console.log(`To limit the possible amount of damage that could be done, please strictly follow the installation guide as that will ensure the API token only has access to the bare minimum.`);
+        console.log(`\n`);
+
+        prompts({
+            type: "confirm",
+            name: "value",
+            message: "Have you read the disclaimer and accept the risks?",
+            initial: true
+        }).then(res => {
+            if(res.value !== true)
+            {
+                console.log(`\n${col.red}Disclaimer not read or not accepted. Exiting...${col.rst}\n`);
+                process.exit(1);
+            }
+
+            return pRes();
+        });
     });
 }
 

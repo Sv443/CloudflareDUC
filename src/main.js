@@ -68,6 +68,8 @@ async function initAll()
 
     if(guiEnabled)
         menus.main();
+    else
+        console.log(`\n\n${col.green}${settings.name} v${settings.version} - ready${col.rst}\n`);
     
     fetchLoop();
     setInterval(fetchLoop, settings.fetchLoopInterval * (60 * 1000));

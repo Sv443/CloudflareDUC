@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 
+// Yes, I know this doesn't do shit for actual protection
+// It's only to stop scrapers and viruses from stealing your API token
 
 /**
  * Encrypts a string

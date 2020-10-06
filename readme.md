@@ -7,7 +7,7 @@
 
 <br>
 
-[![](https://img.shields.io/github/license/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/blob/master/LICENSE) [![](https://img.shields.io/github/issues/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/issues) [![](https://img.shields.io/github/stars/Sv443/CloudflareDUC.svg?style=flat-square)](https://github.com/Sv443/CloudflareDUC/)
+[![](https://img.shields.io/github/license/Sv443/CloudflareDUC.svg)](https://github.com/Sv443/CloudflareDUC/blob/master/LICENSE) [![](https://img.shields.io/github/issues/Sv443/CloudflareDUC.svg)](https://github.com/Sv443/CloudflareDUC/issues) [![](https://img.shields.io/github/stars/Sv443/CloudflareDUC.svg)](https://github.com/Sv443/CloudflareDUC/)
 
 </div>
 
@@ -108,6 +108,8 @@ If you need to contact me, please either [join my Discord server](https://sv443.
 ### Dependencies:
 CloudflareDUC needs the following dependencies (and their sub-dependencies) to ensure stability, security and maintainability:  
 
+<!-- - [](https://npmjs.com/package/) -->
+- [cloudflare](https://npmjs.com/package/cloudflare)
 - [dotenv](https://npmjs.com/package/dotenv)
 - [fs-extra](https://npmjs.com/package/fs-extra)
 - [is-ip](https://npmjs.com/package/is-ip)

@@ -1,3 +1,5 @@
+const { resolve } = require("path");
+
 const pkg = require("./package.json");
 
 const settings = {
@@ -7,11 +9,11 @@ const settings = {
     versionInt: pkg.version.split(".").map(x=>parseInt(x)),
     author: pkg.author,
     githubURL: "https://github.com/Sv443/CloudflareDUC",
-    configPath: "./.config.json",
+    configPath: resolve("./.config.json"),
     restartInterval: 10, // in seconds
     init: {
         ensureDirectories: [
-            "./logs/"
+            resolve("./logs/")
         ]
     },
     fetchLoopInterval: 5, // in minutes
