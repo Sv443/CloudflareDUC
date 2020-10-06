@@ -2,6 +2,8 @@ const Cloudflare = require("cloudflare");
 
 const crypto = require("./crypto");
 
+const settings = require("../settings");
+
 
 /** @type {Cloudflare} */
 var cf;
@@ -23,7 +25,7 @@ function init(apiToken)
 
         cf.user.read().then(res => {
             if(res.result.length < 1)
-                return pRej(`CloudflareDUC doesn't have access to the Cloudflare API. Maybe the provided auth token is invalid.`);
+                return pRej(`${settings.name} doesn't have access to the Cloudflare API. Maybe the provided auth token is invalid.`);
             return pRes();
         }).catch(err => {
             return pRej(`${err.statusCode} ${err.statusMessage} - Maybe the provided auth token is invalid.`);

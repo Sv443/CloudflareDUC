@@ -2,10 +2,12 @@ const scl = require("svcorelib");
 const prompts = require("prompts");
 
 const config = require("./config");
+const checkUpdate = require("./checkUpdate");
 
 const col = scl.colors.fg;
 const settings = require("../settings");
 
+//#MARKER menus
 
 /**
  * Displays the main menu
@@ -22,14 +24,13 @@ function main()
             "Live Monitor",
             "Info View",
             "Modify Configuration",
+            "About",
             "Exit"
         ]);
 
         sm.open();
 
         sm.onSubmit().then(result => {
-            console.log(`Selected option ${result.option.index} (${result.option.description})`);
-
             switch(result.option.index)
             {
                 case 0: // Live Monitor
@@ -38,7 +39,9 @@ function main()
                     return infoView();
                 case 2: // Modify Config
                     return modifyConfig();
-                case 3: // Exit
+                case 3: // About
+                    return about().then(() => main());
+                case 4: // Exit
                     return process.exit(0);
             }
         });
@@ -141,6 +144,64 @@ function modifyConfig()
 
     return modMenFn();
 }
+
+/**
+ * Shows the "About" menu, displaying some information about CF-DUC.  
+ * @returns {Promise} Promise resolves when the user presses any key
+ */
+function about()
+{
+    return new Promise(pRes => {
+        /**
+         * @param {checkUpdate.ReleaseInfo} release Release info
+         * @param {checkUpdate.ReleaseInfo} prerelease Prerelease info
+         */
+        const logMsgs = (release, prerelease) => {
+            console.log(`${col.green}${settings.name} ${col.yellow}v${settings.version}${col.rst}${col.rst}`);
+            process.stdout.write("\n");
+            console.log(`Made by ${col.yellow}${settings.author.name}${col.rst} ( ${settings.author.url} )`);
+            console.log(`GitHub page: ${settings.githubURL}`);
+
+            if(release != null && release.updateAvailable)
+            {
+                // New release is available
+                console.log("\n");
+                console.log(`A new release of ${settings.name} is available:`);
+                console.log(`Version ${release.version} - ${release.name}`);
+                console.log(`Go to this page to download it: ${release.url}`);
+            }
+            else if(prerelease != null && (release == null || release != null && !release.updateAvailable) && prerelease.updateAvailable)
+            {
+                // No new release is available, but a prerelease is
+                console.log("\n");
+                console.log(`${col.yellow}A new (possibly unstable) prerelease of ${settings.name} is available${col.rst}`);
+                console.log(`Description: ${prerelease.name} ${col.yellow}(v${prerelease.version})${col.rst}`);
+                console.log(`Go to this page to download it: ${col.blue}${prerelease.url}${col.rst}`);
+            }
+            
+
+            console.log("\n");
+
+            scl.pause("Press any key to go back to the main menu...")
+                .then(() => pRes())
+                .catch(() => pRes());
+        };
+
+        checkUpdate.getLatestVersion(true).then(ri => {
+            checkUpdate.getLatestVersion(false).then(pri => {
+                return logMsgs(ri, pri);
+            }).catch(err => {
+                scl.unused(err);
+                return logMsgs(ri, null);
+            });
+        }).catch(err => {
+            scl.unused(err);
+            return logMsgs(null, null);
+        });
+    });
+}
+
+//#MARKER misc
 
 /**
  * Waits for a user to input a string, then resolves promise

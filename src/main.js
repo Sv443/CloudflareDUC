@@ -13,10 +13,6 @@ const col = scl.colors.fg;
 const settings = require("../settings");
 
 
-scl.softShutdown(() => {
-    process.stdout.write(col.rst); // ensure stdout color is reset
-});
-
 var cfg = {};
 var ipv4 = "";
 var ipv6 = "";
@@ -28,7 +24,41 @@ async function initAll()
 
     cfg = await config.load();
 
-    await api.init(cfg.user.apiToken);
+    let errored = false;
+
+    try
+    {
+        await api.init(cfg.user.apiToken);
+    }
+    catch(err)
+    {
+        errored = true;
+
+        let countdown = settings.restartInterval;
+        let countdownIv = setInterval(() => {
+            let logMsgs = [];
+            
+            console.clear();
+
+            logMsgs.push(`\n${col.red}No Internet Connection or Cloudflare API is down${col.rst}`);
+            logMsgs.push(`You either don't have an internet connection or the Cloudflare API couldn't be reached.\n`);
+            logMsgs.push(`${settings.name} will retry the connection in ${col.yellow}${countdown}${col.rst} seconds...`);
+            logMsgs.push(`\n`);
+
+            process.stdout.write(logMsgs.join("\n"));
+
+            countdown--;
+
+            if(countdown < 0)
+            {
+                clearInterval(countdownIv);
+                return initAll();
+            }
+        }, 1000);
+    }
+
+    if(errored)
+        return;
 
     let guiEnabled = true;
     process.argv.forEach(arg => {
@@ -129,4 +159,4 @@ async function checkRecords()
 //     });
 // }
 
-initAll();
+module.exports = { initAll };

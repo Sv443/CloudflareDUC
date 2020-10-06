@@ -2,11 +2,20 @@
   "name": "@sv443/cfduc",
   "version": "1.0.0",
   "description": "A DNS update client for Cloudflare enabled domains",
-  "bin": "./src/main.js",
+  "bin": "./CloudflareDUC.js",
   "main": "CloudflareDUC.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./ && exit $?"
+    "lint": "eslint ./ && exit $?",
+
+
+    "build": "npm run build-win && npm run build-linux && npm run build-mac",
+    "build-win": "npm run build-win-64 && npm run build-win-86",
+
+    "build-win-64": "pkg -t node12-win-x64 -o dist/CloudflareDUC-Win64.exe .",
+    "build-win-86": "pkg -t node12-win-x86 -o dist/CloudflareDUC-Win86.exe .",
+    "build-linux": "pkg -t node12-linux-x64 -o dist/CloudflareDUC-Linux .",
+    "build-mac": "pkg -t node12-mac-x64 -o dist/CloudflareDUC-MacOS ."
   },
   "keywords": [
     "js",
@@ -21,9 +30,9 @@
   "repository": "https://github.com/Sv443/CloudflareDUC.git",
   "homepage": "https://github.com/Sv443/CloudflareDUC#readme",
   "author": {
-      "name": "Sv443",
-      "email": "contact@sv443.net",
-      "url": "https://github.com/Sv443"
+    "name": "Sv443",
+    "email": "contact@sv443.net",
+    "url": "https://github.com/Sv443"
   },
   "license": "MIT",
   "dependencies": {
@@ -36,6 +45,7 @@
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
-    "eslint": "^7.7.0"
+    "eslint": "^7.7.0",
+    "pkg": "^4.4.9"
   }
 }

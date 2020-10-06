@@ -6,4 +6,8 @@
  * @version 1.0.0
  */
 
-require("./src/main");
+
+const main = require("./src/main");
+
+// init + start CF-DUC
+main.initAll();
