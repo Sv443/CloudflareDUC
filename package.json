@@ -9,13 +9,15 @@
     "lint": "eslint ./ && exit $?",
 
 
-    "build": "npm run build-win && npm run build-linux && npm run build-mac",
-    "build-win": "npm run build-win-64 && npm run build-win-86",
+    "prebuild": "node tools/prebuild",
+    "postbuild": "node tools/postbuild",
+    "build": "echo ! Building CloudflareDUC for every platform ! && npm run build-win && npm run build-linux && npm run build-mac",
+    "build-win": "echo ! Building CloudflareDUC for Windows (x64 and x86) ! && npm run build-win-64 && npm run build-win-86",
 
     "build-win-64": "pkg -t node12-win-x64 -o dist/CloudflareDUC-Win64.exe .",
     "build-win-86": "pkg -t node12-win-x86 -o dist/CloudflareDUC-Win86.exe .",
-    "build-linux": "pkg -t node12-linux-x64 -o dist/CloudflareDUC-Linux .",
-    "build-mac": "pkg -t node12-mac-x64 -o dist/CloudflareDUC-MacOS ."
+    "build-linux": "echo ! Building CloudflareDUC for Linux ! && pkg -t node12-linux-x64 -o dist/CloudflareDUC-Linux .",
+    "build-mac": "echo ! Building CloudflareDUC for MacOS ! && pkg -t node12-mac-x64 -o dist/CloudflareDUC-MacOS ."
   },
   "keywords": [
     "js",
