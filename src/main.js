@@ -98,7 +98,7 @@ async function fetchLoop()
     if(a4Records > 0)
         ipv6 = await fetchIP("ipv6");
 
-    if(aRecords <= 0 && a4Records <= 0)
+    if(aRecords == 0 && a4Records == 0)
     {
         if(!guiEnabled)
         {
