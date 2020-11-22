@@ -205,4 +205,51 @@ async function checkRecords()
 //     });
 // }
 
+<<<<<<< HEAD
+=======
+/**
+ * Returns CF-DUC's logo as colored ASCII art
+ * @param {Number} [loadingStage] Between 1 and 3
+ */
+function getAsciiLogo(loadingStage)
+{
+    let darkYellow = "\x1b[2m\x1b[33m";
+    let darkWhite = "\x1b[2m\x1b[37m";
+
+    let loadingDots = "";
+    for(let i = 0; i < loadingStage; i++)
+        loadingDots += "  ▄";
+
+    let retStr = `\
+${darkYellow}                                     *,******/,#,.                      ${col.yellow}##${col.rst}
+${darkYellow}                               ,*******************/*,               ${col.yellow}#####${col.rst}
+${darkYellow}                            ****************************..         ${col.yellow}#######${col.rst}
+${darkYellow}                          ********************************.     ${col.yellow}##########${col.rst}
+${darkYellow}                         *********************************/** ${col.yellow}##/##########${col.rst}
+${darkYellow}             /*********************************************/**   ${col.yellow}##########${col.rst}
+${darkYellow}            */***********************************************,  ${col.yellow}######## \\#${col.rst}
+${darkYellow}           ,************************************************,  ${col.yellow}#########${col.rst}
+${darkYellow}           .*********************************************/**  ${col.yellow}##########${col.rst}
+${darkYellow}     ****************************´´´´´´´´´´´´´´´´´´´´´´´´´´   ${col.yellow}\`########${col.rst}
+${darkYellow}  ,*/*****************,,,,,,,,,                             ${col.yellow}     ######${col.rst}
+${darkYellow},,****************************************************     ${col.yellow}##\\   \\####${col.rst}
+${darkYellow}*****************************************************/**  ${col.yellow}###########${col.rst}
+
+${darkWhite}             %%%%%%%%%%%        %%%%%%    %%%%%%%       %%%%%%%%${col.rst}
+${darkWhite}             %%%%%%%%%%%%%%%    %%%%%%    %%%%%%%   %%%%%%%%%%%%%%${col.rst}
+${darkWhite}             %%%%%%  %%%%%%%%%  %%%%%%    %%%%%%%  %%%%%%    %%%%${col.rst}
+${darkWhite}             %%%%%%     %%%%%%% %%%%%%    %%%%%%% %%%%%%${col.rst}
+${darkWhite}             %%%%%%     %%%%%%% %%%%%%    %%%%%%% %%%%%%${col.rst}
+${darkWhite}             %%%%%%    %%%%%%%  %%%%%%    %%%%%%% %%%%%%%    %%%%${col.rst}
+${darkWhite}             %%%%%%%%%%%%%%%%%  %%%%%%%% %%%%%%%   %%%%%%%%%%%%%%%${col.rst}
+${darkWhite}             %%%%%%%%%%%%%%%     %%%%%%%%%%%%%%      %%%%%%%%%%%${col.rst}
+
+
+                 █    █▀█  ▄▀█  █▀▄  █  █▄ █  █▀▀
+                 █▄▄  █▄█  █▀█  █▄▀  █  █ ▀█  █▄█${loadingDots}`;
+
+    return retStr;
+}
+
+>>>>>>> ee8e474de8ecc2a910b3ed56464fcc78648d0798
 module.exports = { initAll };
