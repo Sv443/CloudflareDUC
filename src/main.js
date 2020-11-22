@@ -30,9 +30,6 @@ async function initAll()
             guiEnabled = false;
     });
 
-    if(guiEnabled === true)
-        await splashScreen();
-
     if(!config.exists())
         await config.create();
 
@@ -107,29 +104,6 @@ async function initAll()
     
     fetchLoop();
     setInterval(fetchLoop, settings.fetchLoopInterval * (60 * 1000));
-}
-
-/**
- * Displays the splash screen for a few seconds
- */
-async function splashScreen()
-{
-    return new Promise(pRes => {
-        let loadingStage = 1;
-        let iv = setInterval(() => {
-            console.clear();
-
-            if(loadingStage == 4)
-            {
-                clearInterval(iv);
-                return pRes();
-            }
-
-            console.log(getAsciiLogo(loadingStage));
-
-            loadingStage++;
-        }, (settings.init.splashScreenTime * 1000) / 3);
-    });
 }
 
 /**
@@ -230,51 +204,5 @@ async function checkRecords()
 //         });
 //     });
 // }
-
-/**
- * Returns CF-DUC's logo as colored ASCII art
- * @param {Number} [loadingStage] Between 1 and 3
- */
-function getAsciiLogo(loadingStage)
-{
-    let darkYellow = "\x1b[2m\x1b[33m";
-    let darkWhite = "\x1b[2m\x1b[37m";
-
-    let loadingDots = "";
-    for(let i = 0; i < loadingStage; i++)
-        loadingDots += "  ▄";
-
-    let retStr = `\
-${darkYellow}                                     *,******/,#,.                      ${col.yellow}##${col.rst}
-${darkYellow}                               ,*******************/*,               ${col.yellow}#####${col.rst}
-${darkYellow}                            ****************************..         ${col.yellow}#######${col.rst}
-${darkYellow}                          ********************************.     ${col.yellow}##########${col.rst}
-${darkYellow}                         *********************************/** ${col.yellow}##/##########${col.rst}
-${darkYellow}             /*********************************************/**   ${col.yellow}##########${col.rst}
-${darkYellow}            */***********************************************,  ${col.yellow}######## \\#${col.rst}
-${darkYellow}           ,************************************************,  ${col.yellow}#########${col.rst}
-${darkYellow}           .*********************************************/**  ${col.yellow}##########${col.rst}
-${darkYellow}     ****************************´´´´´´´´´´´´´´´´´´´´´´´´´´   ${col.yellow}\`########${col.rst}
-${darkYellow}  ,*/*****************,,,,,,,,,                             ${col.yellow}     ######${col.rst}
-${darkYellow},,****************************************************     ${col.yellow}##\\   \\####${col.rst}
-${darkYellow}*****************************************************/**  ${col.yellow}###########${col.rst}
-${darkYellow}*****************************************************/**${col.yellow}############${col.rst}
-
-${darkWhite}             %%%%%%%%%%%        %%%%%%    %%%%%%%       %%%%%%%%${col.rst}
-${darkWhite}             %%%%%%%%%%%%%%%    %%%%%%    %%%%%%%   %%%%%%%%%%%%%%${col.rst}
-${darkWhite}             %%%%%%  %%%%%%%%%  %%%%%%    %%%%%%%  %%%%%%    %%%%${col.rst}
-${darkWhite}             %%%%%%     %%%%%%% %%%%%%    %%%%%%% %%%%%%${col.rst}
-${darkWhite}             %%%%%%     %%%%%%% %%%%%%    %%%%%%% %%%%%${col.rst}
-${darkWhite}             %%%%%%     %%%%%%% %%%%%%    %%%%%%% %%%%%%${col.rst}
-${darkWhite}             %%%%%%    %%%%%%%  %%%%%%    %%%%%%% %%%%%%%    %%%%${col.rst}
-${darkWhite}             %%%%%%%%%%%%%%%%%  %%%%%%%% %%%%%%%   %%%%%%%%%%%%%%%${col.rst}
-${darkWhite}             %%%%%%%%%%%%%%%     %%%%%%%%%%%%%%      %%%%%%%%%%%${col.rst}
-
-
-                 █    █▀█  ▄▀█  █▀▄  █  █▄ █  █▀▀
-                 █▄▄  █▄█  █▀█  █▄▀  █  █ ▀█  █▄█${loadingDots}`;
-
-    return retStr;
-}
 
 module.exports = { initAll };

@@ -101,7 +101,7 @@ CloudflareDUC does not collect any data about you, except for the data you provi
 <br>
 
 ### Inquiries:
-If you need to contact me, please either [join my Discord server](https://sv443.net/discord) or contact me via E-Mail: [`contact@sv443.net`](mailto:contact@sv443.net)
+If you need to contact me, please either [join my Discord server](https://sv443.net/discord) or contact me via E-Mail: [`contact@sv443.net`](mailto:contact@sv443.net?subject=Inquiry%20about%20CloudflareDUC)
 
 <br>
 
@@ -112,6 +112,7 @@ CloudflareDUC needs the following dependencies (and their sub-dependencies) to e
 - [cloudflare](https://npmjs.com/package/cloudflare)
 - [dotenv](https://npmjs.com/package/dotenv)
 - [fs-extra](https://npmjs.com/package/fs-extra)
+- [hidefile](https://npmjs.com/package/hidefile)
 - [is-ip](https://npmjs.com/package/is-ip)
 - [prompts](https://npmjs.com/package/prompts)
 - [svcorelib](https://npmjs.com/package/svcorelib)

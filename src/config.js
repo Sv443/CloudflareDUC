@@ -1,6 +1,7 @@
 const fs = require("fs-extra");
 const scl = require("svcorelib");
 const prompts = require("prompts");
+const { hideSync } = require("hidefile");
 
 const crypto = require("./crypto");
 const xhr = require("./xhr");
@@ -113,13 +114,15 @@ async function runPrompts()
                 console.log(`If something is unclear, please refer to the installation guide at ${settings.githubURL}#generating-an-api-token`);
                 console.log(`You can press CTRL+C at any time to cancel.`);
                 console.log(`\n`);
-                
+
+                //#SECTION token
+
                 let rawApiKey = await input(`${col.yellow}What is your API token?${col.rst}`, true);
 
                 if(rawApiKey === undefined)
                     process.exit(0);
 
-                process.stdout.write("\n\n\n");
+                process.stdout.write("\n");
                 process.stdout.write("Validating...");
 
                 let dataValid = await apiAccessGranted(rawApiKey);
@@ -136,14 +139,20 @@ async function runPrompts()
                     return firstStartProc();
                 }
 
-                process.stdout.write(`${col.green}Success!${col.rst}\n\n`);
+                process.stdout.write(`${col.green}API token is valid.${col.rst}\n\n`);
 
                 let encrypted = await crypto.encrypt(rawApiKey);
                 config.user.apiToken = encrypted;
 
+
+                //#SECTION set up domains and records
+
+
                 await scl.pause(`Press any key to confirm the data and continue to the main menu...`);
                 
                 fs.writeFileSync("./.config.json", JSON.stringify(config, null, 4));
+
+                hideSync("./.config.json");
 
                 return res();
             };

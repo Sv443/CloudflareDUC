@@ -1,4 +1,5 @@
 const scl = require("svcorelib");
+const prompts = require("prompts");
 
 const config = require("./config");
 const checkUpdate = require("./checkUpdate");
@@ -20,9 +21,9 @@ function main()
         let sm = new scl.SelectionMenu(`${settings.name} - Main Menu:`, { cancelable: false });
 
         sm.setOptions([
-            "Live Monitor",
             "Info View",
-            "Modify Configuration",
+            "Live Monitor [WIP]",
+            "Edit Config",
             "About",
             "Exit"
         ]);
@@ -32,10 +33,10 @@ function main()
         sm.onSubmit().then(result => {
             switch(result.option.index)
             {
-                case 0: // Live Monitor
-                    return liveMonitor();
-                case 1: // Info View
+                case 0: // Info View
                     return infoView();
+                case 1: // Live Monitor
+                    return liveMonitor();
                 case 2: // Modify Config
                     return modifyConfig();
                 case 3: // About
@@ -48,19 +49,39 @@ function main()
 }
 
 /**
- * Opens the live monitor, showing some stats and live DNS updates
- */
-function liveMonitor()
-{
-
-}
-
-/**
  * Opens the info view (list of information about supervised domains, records, etc.)
  */
 function infoView()
 {
+    let cfg = config.load();
+    if(cfg.domains && cfg.domains.length > 0)
+    {
+        console.log(`Domains (${cfg.domains.length}):`);
+        cfg.domains.forEach(domain => {
+            console.log(`- ${domain.name} (${(domain.records && domain.records.length > 0) ? domain.records.length : 0} Record${(domain.records && domain.records.length == 1) ? "" : "s"}`);
+        });
 
+        console.log();
+
+        scl.pause().then(() => main());
+    }
+    else
+    {
+        console.log(`${col.yellow}No domains have been enabled to be automatically updated. Please edit the configuration.${col.rst}\n`);
+
+        scl.pause().then(() => main());
+    }
+}
+
+/**
+ * Opens the live monitor, showing some stats and live DNS updates
+ */
+function liveMonitor()
+{
+    console.log("Work in Progress!");
+    scl.pause("Press any key to return to the main menu...").then(() => {
+        return main();
+    });
 }
 
 function modifyConfig()
@@ -68,8 +89,7 @@ function modifyConfig()
     let modSm = new scl.SelectionMenu(`Modify Config`, { cancelable: true });
 
     modSm.setOptions([
-        "Edit Config",
-        "Recreate Config",
+        "Edit Config [WIP]",
         "Delete Config",
         "Back to Main Menu"
     ]);
@@ -88,21 +108,34 @@ function modifyConfig()
         {
             case 0: // Edit Config
                 // config.edit();
-                console.log("Work in Progress!\nPlease use the \"Recreate\" option instead.");
+                console.log("Work in Progress!\nPlease use the \"Delete Config\" option instead.");
                 scl.pause().then(() => {
                     return modifyConfig();
                 });
             break;
-            case 1: // Recreate Config
-                config.create();
+            case 1: // Delete Config
+                prompts({
+                    type: "confirm",
+                    name: "value",
+                    message: "Are you sure you want to delete the config file?",
+                    initial: true
+                }).then(res => {
+                    if(res.value !== true)
+                    {
+                        console.log(`\n${col.yellow}Not deleting the config file.${col.rst}\n`);
+                        scl.pause().then(() => {
+                            return main();
+                        });
+                    }
+                    else
+                    {
+                        config.remove();
+                        console.log(`${settings.name} will now exit. You may immediately restart it to trigger the initial prompt again.`);
+                        scl.pause().then(() => process.exit(0) );
+                    }
+                });
             break;
-            case 2: // Delete Config
-                config.remove();
-
-                console.log(`${settings.name} will now exit. You may immediately restart it to trigger the initial prompt again.`);
-                scl.pause().then(() => process.exit(0) );
-            break;
-            case 3: // Main Menu
+            case 2: // Main Menu
             default:
                 return main();
         }
@@ -126,7 +159,7 @@ function about()
             console.log(`${col.green}${settings.name} ${col.yellow}v${settings.version}${col.rst}${col.rst}`);
             process.stdout.write("\n");
             console.log(`Made by ${col.yellow}${settings.author.name}${col.rst} ( ${settings.author.url} )`);
-            console.log(`GitHub page: ${settings.githubURL}`);
+            console.log(`GitHub repo: ${settings.githubURL}`);
 
             if(release != null && release.updateAvailable)
             {

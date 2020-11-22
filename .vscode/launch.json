@@ -17,6 +17,19 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "No GUI",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "args": [
+                "-n"
+            ],
+            "program": "${workspaceFolder}/CloudflareDUC.js",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "test.js",
             "skipFiles": [
                 "<node_internals>/**"

@@ -20,13 +20,13 @@
 
 [closed-beta-0.6]
     - Improved comments in "settings.cfg" file
-    - Added more error catching and prevention to have more stability <#18>
+    - Added more error catching and prevention to have more stability (issue #18)
     - More overall logging to log files
 
 [closed-beta-0.5] - Optimizations and bug fixes
-    - Fixed crashes when getting unexpected responses from IP getters or the Cloudflare API <#13 and #15>
-    - Fixed "xhr is not defined" error <#16>
-    - Fixed bug of CF-DUC crashing if there are other types of DNS records present (not just A or AAAA) <#17>
+    - Fixed crashes when getting unexpected responses from IP getters or the Cloudflare API (issue #13 and #15)
+    - Fixed "xhr is not defined" error (issue #16)
+    - Fixed bug of CF-DUC crashing if there are other types of DNS records present (not just A or AAAA) (issue #17)
     - Improved wrapper and main scripts to support the VS Code debugger
     - Added legend at the top of this document
     - Removed boot loop detection so CF-DUC doesn't die as easily in an outage (like the one that happened on July 3rd 2019)

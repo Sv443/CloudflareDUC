@@ -18,6 +18,14 @@ const settings = {
         ]
     },
     fetchLoopInterval: 5, // in minutes
+    /** [ Width, Height ] - Padding of the ASCII logo */
+    asciiLogoPadding: [ 0, 0 ],
+    /** Options for the package asciify-image - Documentation: https://www.npmjs.com/package/asciify-image#optionscolor */
+    asciifyOpts: {
+        color: true,
+        fit: "box",
+        format: "array"
+    }
 }
 
 module.exports = Object.freeze(settings);
